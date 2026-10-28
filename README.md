@@ -3,6 +3,9 @@
 </p>
 
 > [!NOTE]
+> **Folia-Spotify-on-iPhone** 是 [Folia-Spotify](https://github.com/yu-0615/Folia-Spotify) 給 iPhone 用的版本：功能和 Folia-Spotify 一樣，另外調整了在 iPhone 上的版面（整頁字級縮小、底部列貼底、膠囊形的正在播放卡片、較窄的控制面板），並讓從主畫面打開的 Folia 也能登入 Spotify。部署方式見下方 [iPhone 部署](#iphone-部署)。Folia-Spotify 本身是 [Folia](https://github.com/chthollyphile/folia-major)（作者 [chthollyphile](https://github.com/chthollyphile)）的 fork，下面是它的說明。
+
+> [!NOTE]
 > **Folia-Spotify** 是 [Folia](https://github.com/chthollyphile/folia-major)（作者 [chthollyphile](https://github.com/chthollyphile)）的 fork，按原專案的 [AGPL-3.0](LICENSE) 授權條款釋出。Folia 的設計與絕大部分程式碼都出自原作者和[貢獻者們](CONTRIBUTORS.md)，請到原專案回報原有功能的問題、幫原專案按星星。
 >
 > 本 fork 自 2026-10 起所做的修改：接入 Spotify（官方 Web API + PKCE 登入，見 `src/services/onlineMusic/spotify/web/`），歌在你自己的 Spotify App 裡播放（iPhone、Mac……），Folia 跟著顯示歌詞、控制播放；Spotify 網頁版的歌詞改從其他來源匹配；網易雲、QQ 音樂、酷狗、波點、汽水音樂預設只作為歌詞來源（設定「連線與整合」裡可以開啟）；沒選過平臺時從 Spotify 開始；新增 `npm run dev:web` 一次啟動網頁版和本地的網易雲、QQ、酷狗 API。逐項修改見本儲存庫的提交紀錄。
@@ -28,7 +31,7 @@ Lyrics Reimagined // 辭曲新境
 
 [取得方式](#取得方式)
 ·
-[Vercel 部署](https://vercel.com/new/clone?repository-url=https://github.com/yu-0615/Folia-Spotify)
+[Vercel 部署](https://vercel.com/new/clone?repository-url=https://github.com/yu-0615/Folia-Spotify-on-iPhone)
 ·
 [Spotify 說明](#spotify)
 ·
@@ -39,6 +42,14 @@ Lyrics Reimagined // 辭曲新境
 [技術說明](docs/technical.md)
 
 </div>
+
+## iPhone 部署
+
+1. 按下方「取得方式 → 一鍵部署」的 Vercel 按鈕部署這個儲存庫，記下 Vercel 給的網域（`https://<名稱>.vercel.app`）。其他環境變數（QQ 音樂等）見 [技術說明](docs/technical.md)。
+2. 到 [Spotify for Developers](https://developer.spotify.com/dashboard) 建立應用，API 勾選 **Web API**，**Redirect URIs** 加上 `https://<你的網域>/spotify-callback.html`，在 **User Management** 加入要登入的帳號。也可以在 Vercel 設定 `VITE_SPOTIFY_CLIENT_ID`，登入時就不用再填 Client ID。**Client Secret 用不到，也不要放進來。**
+3. 用 iPhone 的 Safari 打開網址，按「分享」→「加入主畫面」，之後從主畫面打開。Safari 和主畫面的 Folia 各存各的登入，請在主畫面打開的 Folia 裡登入 Spotify：Spotify 的登入頁會在 Folia 裡打開，同意後自動回到 Folia。
+4. 歌在 iPhone 的 Spotify App 裡播放，Folia 跟著顯示歌詞、控制播放。先在 Spotify App 裡播一首歌。
+5. Now Playing 歌詞來源連的是 `npHost` 主機（電腦上的 Now Playing 服務，經 HTTPS 通道對外）：第一次用 `https://<你的網域>/?npHost=<通道主機>` 打開，之後會記住。
 
 ## 專案簡介
 
@@ -220,11 +231,11 @@ https://github.com/user-attachments/assets/704f195a-2194-434b-86e8-8f36290e5cc4
 
 如果你希望快速上線 Web 版本，請閱讀 [Vercel 一鍵部署指南](https://folia-site.cielaniska.top/guide/deploy-vercel) 來建立專案
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yu-0615/Folia-Spotify) 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yu-0615/Folia-Spotify-on-iPhone) 
 
 專案也支援一鍵部署到 Cloudflare，請參考 Vercel 的部署教程進行相應調整。
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/yu-0615/Folia-Spotify)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/yu-0615/Folia-Spotify-on-iPhone)
 
 Vercel 與 Cloudflare 上的 QQ 音樂不再需要額外部署一個常駐 API 例項：把 `VITE_QQ_API_BASE` 填成 `/api/qq`，再配一個 `QQ_SESSION_SECRET`（服務端金鑰，**不加 `VITE_` 字首**）即可。這種形態支援微信掃碼和手機 QQ 掃碼登入（手機 QQ 掃碼要 qq-music-api 3.3.3 或更高版本），且播放前必須先登入；Cloudflare 上可以再繫結一個 Durable Object，讓 QQ 掃碼改走長連線，並多一個 QQ 音樂 App 掃碼。完整步驟、平臺差異和排錯方法見 [QQ 音樂部署指南](docs/qq-music-deployment.md)。
 
@@ -243,7 +254,7 @@ Linux 包、Wayland / Hyprland 遙控窗和桌面端細節見 [技術與開發�
 | 方式 | 說明 |
 | --- | --- |
 | **PWA（推薦）** | 部署 Web 版本或自託管版本後，在 Chrome for Android / iOS Safari 中將網頁新增到主螢幕，即可作為 PWA 應用使用。 |
-| **iPhone 部署** | [yu-0615/Folia-on-iPhone](https://github.com/yu-0615/Folia-on-iPhone)：部署到 Vercel、在 iPhone 的 Safari 加入主畫面使用的 Folia 網頁版，部署方式見該儲存庫。 |
+| **iPhone 部署** | 就是這個儲存庫（yu-0615/Folia-Spotify-on-iPhone）：部署到 Vercel、在 iPhone 的 Safari 加入主畫面使用，見上方 [iPhone 部署](#iphone-部署)。 |
 | **社群移植版（Android）** | [maimai993/folia-sonnet](https://github.com/maimai993/folia-sonnet) · [whycfawa/folia-android](https://github.com/whycfawa/folia-android) |
 | **自行打包（Android）** | 有一定技術基礎的使用者可以用 Capacitor 將 Web 版本打包為可安裝的 APK，參考示範儲存庫 [chthollyphile/folia-sonnet](https://github.com/chthollyphile/folia-sonnet)。 |
 

@@ -3,6 +3,9 @@
 </p>
 
 > [!NOTE]
+> **Folia-Spotify-on-iPhone** is the iPhone version of [Folia-Spotify](https://github.com/yu-0615/Folia-Spotify): the same features, with its layout adjusted for the iPhone (a smaller page font size, the bottom bar closer to the edge, a pill-shaped now-playing card, a narrower control panel), and Spotify sign-in working when Folia is opened from the home screen. See [iPhone deployment](#iphone-deployment) below for how to deploy it. Folia-Spotify itself is a fork of [Folia](https://github.com/chthollyphile/folia-major) by [chthollyphile](https://github.com/chthollyphile); its description follows.
+
+> [!NOTE]
 > **Folia-Spotify** is a fork of [Folia](https://github.com/chthollyphile/folia-major) by [chthollyphile](https://github.com/chthollyphile), released under the original project's [AGPL-3.0](LICENSE) license. Folia's design and nearly all of its code are the work of the original author and [its contributors](CONTRIBUTORS.md); please report issues with the original features to, and star, the original project.
 >
 > Changes made in this fork since 2026-10: Spotify (official Web API and PKCE sign-in, see `src/services/onlineMusic/spotify/web/`), with the songs playing in your own Spotify app (an iPhone, a Mac…) while Folia shows the lyrics and controls playback; lyrics for Spotify songs on the web matched from other sources; NetEase Cloud Music, QQ Music, Kugou, Bodian and Qishui serve as lyric sources only by default (they can be turned back on under Settings → Connections); listeners who have not chosen a platform start on Spotify; `npm run dev:web` starts the web version together with local NetEase, QQ and Kugou APIs. See this repository's commit history for each change.
@@ -26,7 +29,7 @@ Lyrics Reimagined // 辞曲新境
 
 [Get Folia](#get-folia)
 ·
-[Deploy to Vercel](https://vercel.com/new/clone?repository-url=https://github.com/yu-0615/Folia-Spotify)
+[Deploy to Vercel](https://vercel.com/new/clone?repository-url=https://github.com/yu-0615/Folia-Spotify-on-iPhone)
 ·
 [Spotify](#spotify)
 ·
@@ -37,6 +40,14 @@ Lyrics Reimagined // 辞曲新境
 [Technical Notes](docs/technical.md)
 
 </div>
+
+## iPhone deployment
+
+1. Deploy this repository with the Vercel button under "Get Folia" below, and note the domain Vercel gives it (`https://<name>.vercel.app`). See the [technical notes](docs/technical.md) for the other environment variables (QQ Music and so on).
+2. Create an app on [Spotify for Developers](https://developer.spotify.com/dashboard) with the **Web API**, add `https://<your domain>/spotify-callback.html` to its **Redirect URIs**, and add the accounts that will sign in under **User Management**. Setting `VITE_SPOTIFY_CLIENT_ID` on Vercel saves typing the Client ID at sign-in. **The Client Secret is not used; do not put it here.**
+3. Open the address in Safari on the iPhone, choose Share → Add to Home Screen, and open Folia from the home screen from then on. Safari and the home-screen Folia keep their own sign-ins, so sign in to Spotify in the Folia opened from the home screen: Spotify's sign-in page opens inside Folia and comes back to it once you agree.
+4. The songs play in the Spotify app on the iPhone while Folia shows the lyrics and controls playback. Play a song in the Spotify app first.
+5. The Now Playing lyric source connects to the `npHost` host (a Now Playing service on a computer, reached through an HTTPS tunnel): open `https://<your domain>/?npHost=<tunnel host>` once, and it is remembered.
 
 ## About
 
@@ -218,11 +229,11 @@ The desktop app bundles both frontend and backend, so it works right after insta
 
 To put the web app online quickly, follow the [Vercel deployment guide](https://folia-site.cielaniska.top/guide/deploy-vercel).
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yu-0615/Folia-Spotify)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yu-0615/Folia-Spotify-on-iPhone)
 
 Folia also deploys to Cloudflare in one click; adapt the Vercel guide accordingly.
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/yu-0615/Folia-Spotify)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/yu-0615/Folia-Spotify-on-iPhone)
 
 On Vercel and Cloudflare, QQ Music no longer needs a separate, always-on API instance: set `VITE_QQ_API_BASE` to `/api/qq` and add a `QQ_SESSION_SECRET` (a server-side secret, **without the `VITE_` prefix**). This setup supports login by scanning a QR code with WeChat or mobile QQ (mobile QQ requires qq-music-api 3.3.3 or later), and you must log in before playback. On Cloudflare you can also bind a Durable Object so QQ QR login uses a long-lived connection and gains QR login with the QQ Music app. For full steps, platform differences, and troubleshooting, see the [QQ Music deployment guide](docs/qq-music-deployment.md) (Chinese).
 
@@ -241,7 +252,7 @@ For Linux packages, the Wayland / Hyprland remote control window, and other desk
 | Option | Details |
 | --- | --- |
 | **PWA (recommended)** | Deploy the web or self-hosted version, then add it to your home screen from Chrome for Android or iOS Safari to use it as a PWA. |
-| **iPhone deployment** | [yu-0615/Folia-on-iPhone](https://github.com/yu-0615/Folia-on-iPhone): the Folia web version deployed to Vercel and added to the home screen from Safari on iPhone. See that repository for how to deploy it. |
+| **iPhone deployment** | This repository (yu-0615/Folia-Spotify-on-iPhone): deployed to Vercel and added to the home screen from Safari on iPhone; see [iPhone deployment](#iphone-deployment) above. |
 | **Community ports (Android)** | [maimai993/folia-sonnet](https://github.com/maimai993/folia-sonnet) · [whycfawa/folia-android](https://github.com/whycfawa/folia-android) |
 | **Build it yourself (Android)** | If you are comfortable with the tooling, package the web version as an installable APK with Capacitor. See the example repository [chthollyphile/folia-sonnet](https://github.com/chthollyphile/folia-sonnet). |
 
