@@ -45,7 +45,7 @@ The features are those of Folia-Spotify, with these changes for the iPhone:
 | --- | --- |
 | Layout | A smaller page font size (12px), content running into the notch and bottom safe areas, the bottom bar closer to the edge, a wider player capsule |
 | Now-playing card | Pill-shaped with a round cover, placed a little further from the left edge, clear of the rounded corner |
-| Control panel | 288px wide, with its toggle moved inward |
+| Control panel | 216px wide as in Folia-on-iPhone (its tabs become icons), with its toggle moved inward |
 | Spotify sign-in | Opened from the home screen, Spotify's sign-in page opens inside Folia and comes back to it once you agree (Folia-Spotify opens a separate window, which never comes back to a home-screen app) |
 | Now Playing | The host to connect to can be set with `?npHost=`, and an HTTPS page uses `wss` |
 
