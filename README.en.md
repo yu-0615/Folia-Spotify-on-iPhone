@@ -2,158 +2,135 @@
   <img src="https://github.com/user-attachments/assets/b5d0e863-48be-497b-b0e9-4bd8d8ce9bf0" alt="Folia" width="100%" />
 </p>
 
-> [!NOTE]
-> **Folia-Spotify-on-iPhone** is the iPhone version of [Folia-Spotify](https://github.com/yu-0615/Folia-Spotify): the same features, with its layout adjusted for the iPhone (a smaller page font size, the bottom bar closer to the edge, a pill-shaped now-playing card, a narrower control panel), and Spotify sign-in working when Folia is opened from the home screen. See [iPhone deployment](#iphone-deployment) below for how to deploy it. Folia-Spotify itself is a fork of [Folia](https://github.com/chthollyphile/folia-major) by [chthollyphile](https://github.com/chthollyphile); its description follows.
-
-> [!NOTE]
-> **Folia-Spotify** is a fork of [Folia](https://github.com/chthollyphile/folia-major) by [chthollyphile](https://github.com/chthollyphile), released under the original project's [AGPL-3.0](LICENSE) license. Folia's design and nearly all of its code are the work of the original author and [its contributors](CONTRIBUTORS.md); please report issues with the original features to, and star, the original project.
->
-> Changes made in this fork since 2026-10: Spotify (official Web API and PKCE sign-in, see `src/services/onlineMusic/spotify/web/`), with the songs playing in your own Spotify app (an iPhone, a Mac…) while Folia shows the lyrics and controls playback; lyrics for Spotify songs on the web matched from other sources; NetEase Cloud Music, QQ Music, Kugou, Bodian and Qishui serve as lyric sources only by default (they can be turned back on under Settings → Connections); listeners who have not chosen a platform start on Spotify; `npm run dev:web` starts the web version together with local NetEase, QQ and Kugou APIs. See this repository's commit history for each change.
-
 <div align="center">
-<a href="https://trendshift.io/repositories/71740?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-71740" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/71740" alt="chthollyphile%2Ffolia-major | Trendshift" width="250" height="55"/></a>
 
-# Folia
+# Folia-Spotify on iPhone
 
-Lyrics Reimagined // 辞曲新境
+Full-screen synced lyrics for Spotify, on your iPhone
 
 [繁體中文](README.md) | English
 
-[![GitHub release](https://img.shields.io/github/v/release/yu-0615/Folia-Spotify?label=release)](https://github.com/yu-0615/Folia-Spotify/releases)
-[![License](https://img.shields.io/github/license/chthollyphile/folia-major)](https://github.com/chthollyphile/folia-major/blob/main/LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/chthollyphile/folia-major?style=social)](https://github.com/chthollyphile/folia-major/stargazers)
-[![Node.js](https://img.shields.io/badge/node-%3E%3D24-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/chthollyphile/folia-major)
-[![Discord](https://img.shields.io/discord/1541051241822687232?logo=discord&logoColor=white&label=Join%20our%20Discord)](https://discord.gg/dMDBTHxeKd)
-[![All Contributors](https://img.shields.io/badge/all_contributors-35-orange.svg?style=flat-square)](CONTRIBUTORS.md)
+[![License](https://img.shields.io/github/license/yu-0615/Folia-Spotify-on-iPhone)](LICENSE)
+[![Based on Folia-Spotify](https://img.shields.io/badge/based%20on-Folia--Spotify-1DB954)](https://github.com/yu-0615/Folia-Spotify)
+[![Original: Folia](https://img.shields.io/badge/original-chthollyphile%2Ffolia--major-555)](https://github.com/chthollyphile/folia-major)
 
-[Get Folia](#get-folia)
+[Deploy to iPhone](#deploy-to-iphone)
 ·
 [Deploy to Vercel](https://vercel.com/new/clone?repository-url=https://github.com/yu-0615/Folia-Spotify-on-iPhone)
 ·
 [Spotify](#spotify)
 ·
-[YouTube Music](#youtube-music)
-·
-[User Guide](https://folia-site.cielaniska.top/guide/)
-·
-[Technical Notes](docs/technical.md)
+[FAQ](#faq)
 
 </div>
 
-## iPhone deployment
-
-1. Deploy this repository with the Vercel button under "Get Folia" below, and note the domain Vercel gives it (`https://<name>.vercel.app`). See the [technical notes](docs/technical.md) for the other environment variables (QQ Music and so on).
-2. Create an app on [Spotify for Developers](https://developer.spotify.com/dashboard) with the **Web API**, add `https://<your domain>/spotify-callback.html` to its **Redirect URIs**, and add the accounts that will sign in under **User Management**. Setting `VITE_SPOTIFY_CLIENT_ID` on Vercel saves typing the Client ID at sign-in. **The Client Secret is not used; do not put it here.**
-3. Open the address in Safari on the iPhone, choose Share → Add to Home Screen, and open Folia from the home screen from then on. Safari and the home-screen Folia keep their own sign-ins, so sign in to Spotify in the Folia opened from the home screen: Spotify's sign-in page opens inside Folia and comes back to it once you agree.
-4. The songs play in the Spotify app on the iPhone while Folia shows the lyrics and controls playback. Play a song in the Spotify app first.
-5. The Now Playing lyric source connects to the `npHost` host (a Now Playing service on a computer, reached through an HTTPS tunnel): open `https://<your domain>/?npHost=<tunnel host>` once, and it is remembered.
+> [!NOTE]
+> This repository is the iPhone version of [Folia-Spotify](https://github.com/yu-0615/Folia-Spotify). Folia-Spotify is a fork of [Folia](https://github.com/chthollyphile/folia-major) by [chthollyphile](https://github.com/chthollyphile), released under the original project's [AGPL-3.0](LICENSE) license. Folia's design and nearly all of its code are the work of the original author and [its contributors](CONTRIBUTORS.md); please report issues with the original features to, and star, the original project.
 
 ## About
 
-Folia is an online music player built around full-screen, immersive lyrics. It supports NetEase Cloud Music, Kugou, QQ Music, Navidrome, and local music libraries; the desktop app also supports Bodian Music, YouTube Music, Spotify, and Qishui Music. Smart lyric matching, AI-generated color themes, and a range of full-screen lyric animations make listening feel different.
+Folia is a music player built around full-screen, immersive lyrics, with many lyric animations, AI-generated color themes, and automatic lyric matching.
 
-Folia ships as an Electron desktop app for Windows, macOS, and Linux, and as a Node.js web app you can deploy to many platforms.
+**Folia-Spotify on iPhone** deploys the web version of Folia-Spotify to Vercel; added to the home screen from Safari on an iPhone, it works like an app:
 
-To use Folia on a phone or in a browser, [deploy the web app to Vercel in one click](https://folia-site.cielaniska.top/guide/deploy-vercel), or deploy it yourself to any platform that runs Node.js.
+- The songs play in the **Spotify app** on the iPhone, while Folia shows the synced lyrics and can play, pause, skip, and change the volume.
+- Lyrics are matched automatically from NetEase Cloud Music, QQ Music, Kugou, and AMLL.
+- The layout is adjusted for the iPhone, and Spotify sign-in works when Folia is opened from the home screen.
 
-## Quick download
+### How it differs from Folia-Spotify
 
-> [!TIP]
-> - **GitHub**: [Latest Release](https://github.com/yu-0615/Folia-Spotify/releases/latest) has Folia-Spotify installers for Windows, macOS, and Linux (it installs beside the original Folia).
-> - The original Folia's installers, cloud-drive downloads included, are on [the original project's Releases](https://github.com/chthollyphile/folia-major/releases/latest).
->
-> For other options (web deployment, Docker, AUR, Flatpak, mobile), see [Get Folia](#get-folia) below.
+The features are those of Folia-Spotify, with these changes for the iPhone:
+
+| Area | Change |
+| --- | --- |
+| Layout | A smaller page font size (12px), content running into the notch and bottom safe areas, the bottom bar closer to the edge, a wider player capsule |
+| Now-playing card | Pill-shaped with a round cover, placed a little further from the left edge, clear of the rounded corner |
+| Control panel | 288px wide, with its toggle moved inward |
+| Spotify sign-in | Opened from the home screen, Spotify's sign-in page opens inside Folia and comes back to it once you agree (Folia-Spotify opens a separate window, which never comes back to a home-screen app) |
+| Now Playing | The host to connect to can be set with `?npHost=`, and an HTTPS page uses `wss` |
+
+## Deploy to iPhone
+
+### 1. Deploy to Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yu-0615/Folia-Spotify-on-iPhone)
+
+Create a Vercel project from this repository with the button above, and note its domain once it is deployed (`https://<name>.vercel.app`). See the [Vercel deployment guide](https://folia-site.cielaniska.top/guide/deploy-vercel) for the steps, and the [technical notes](docs/technical.md) and [QQ Music deployment guide](docs/qq-music-deployment.md) for the other environment variables (such as QQ Music's `VITE_QQ_API_BASE` and `QQ_SESSION_SECRET`).
+
+### 2. Create your own Spotify app
+
+1. Create an app on [Spotify for Developers](https://developer.spotify.com/dashboard) with the **Web API**.
+2. Add `https://<your domain>/spotify-callback.html` to its **Redirect URIs**.
+3. Add the accounts that will sign in under **User Management**. An app in Development Mode allows up to 5 accounts, and both the app's owner and its users need Spotify Premium.
+4. Note the app's **Client ID**. Setting `VITE_SPOTIFY_CLIENT_ID` in Vercel's environment variables saves typing it at sign-in. The Client ID is not a secret; **the Client Secret is not used, so do not put it here.**
+
+### 3. Add it to the home screen
+
+1. Open your domain in **Safari** on the iPhone.
+2. Choose Share → Add to Home Screen.
+3. From then on, open Folia from its icon on the home screen.
+
+### 4. Sign in to Spotify
+
+In **the Folia opened from the home screen**, choose Spotify and sign in, giving the Client ID if asked. Spotify's sign-in page opens inside Folia and comes back to it once you choose Agree.
+
+A Safari tab and the home-screen Folia keep their data apart: signing in in a Safari tab does not sign in the home-screen Folia.
 
 ## Spotify
 
-Folia-Spotify plays Spotify in both the desktop app and the web version, each in its own way.
+- **Where it plays**: the songs always play in the Spotify app. There is no device to choose: Folia follows the device Spotify is playing on now (this iPhone, a Mac, a speaker…), and "Playing on" in the control panel names it. With none open, Folia asks you to open Spotify first.
+- **Following along**: change songs or skip in the Spotify app, or let Spotify's crossfade move on early, and Folia follows.
+- **What it can do**: search, play, read your playlists and saved songs, like songs, add songs to and remove them from your playlists, and create playlists.
+- **Lyrics**: matched from NetEase Cloud Music, QQ Music, Kugou, and AMLL.
 
-### Desktop
+Spotify's limits on third-party web apps (not something Folia can change):
 
-Choose Spotify under "Connect a streaming service"; your browser opens Spotify's consent page, and agreeing signs you in. Nothing to set up. The desktop app keeps the original author's implementation through the services of Spotify's own client: search, playback, your playlists and library, Spotify's own line-timed lyrics, and the radio and explore pages. Playback needs Spotify Premium.
+- Only playlists you created or collaborate on can be read. Other people's playlists, and Spotify's own ones such as Daily Mix, Discover Weekly, and Release Radar, cannot. Daily Mix is read only by [the Folia-Spotify desktop app](https://github.com/yu-0615/Folia-Spotify).
+- There are no Spotify lyrics, and no radio or explore page.
+- The sound comes from the Spotify app, so the equalizer, effects, visualizer, and automix cannot reach Spotify's songs.
 
-Spotify gives many accounts no audio key (most created since late 2024, and some older ones), so the built-in player cannot play them. Folia-Spotify therefore **plays the songs in your own Spotify app**, while Folia chooses songs, controls playback and shows synced lyrics. Set it up once:
+### Music platforms in mainland China
 
-1. Create your own Spotify app as in steps 1, 2 and 4 of the web version below, with the Redirect URI `http://127.0.0.1:5590/spotify-callback.html`.
-2. Open the Spotify app (on a computer, a phone or a speaker).
-3. In the player's controls, open "Playing on", enter your Client ID, choose "Sign in to Spotify", and agree in your browser.
+NetEase Cloud Music, QQ Music, Kugou, Bodian, and Qishui serve as lyric sources only by default and are not in the platform list. To switch to and sign in to them as in the original Folia, turn on "Show all platforms in the platform list" under Settings → Connections.
 
-There is no device to choose after that: Folia follows the device Spotify is playing on now (an iPhone, a Mac…), and "Playing on" in the controls names it. With nothing playing it uses the device last used, else a computer with Spotify open, else any device that is on; with none on, it asks you to open Spotify first. Moving the playback to another device in the Spotify app moves Folia along.
+## Now Playing
 
-Changing songs or skipping in the Spotify app, or Spotify's crossfade starting the next song early, is followed by Folia. The playlists page shows Spotify's Daily Mix 1–6. Without this sign-in, Folia uses the original author's built-in player (which plays only for accounts that get an audio key).
+Folia can connect to a [Now Playing](https://github.com/Widdit/now-playing-service/) service to show the songs and lyrics of other players on a computer. An iPhone cannot reach the computer's `localhost`, so expose the service through an HTTPS tunnel (such as Cloudflare Tunnel) and tell Folia the tunnel's host:
 
-### Web version
+```text
+https://<your domain>/?npHost=<tunnel host>
+```
 
-The web version uses Spotify's official Web API, signed in through a Spotify app you register; as on the desktop, the songs play in your own Spotify app:
+Open that address once and Folia remembers the host, including when opened from the home screen. With a new tunnel, open it once again with the new host.
 
-1. Create an app on [Spotify for Developers](https://developer.spotify.com/dashboard) with **Web API** and **Web Playback SDK** checked.
-2. Under **Redirect URIs**, add `https://<your domain>/spotify-callback.html`. For local development, `http://127.0.0.1:3000/spotify-callback.html` (Spotify does not accept `localhost`; a public site must use https).
-3. The sign-in window asks for the Client ID (kept on that device only). A deployment can also build with `VITE_SPOTIFY_CLIENT_ID` as the default; set `VITE_SPOTIFY_REDIRECT_URI` only when the redirect differs from the default. The Client ID is not a secret; **the Client Secret is not used, so leave it out**.
-4. Add the accounts that will sign in under the app's **User Management**. An app in development mode lets in at most 5 accounts, and the owner and the users need Premium.
+## FAQ
 
-For local development, this starts the web version together with the NetEase, QQ Music and Kugou APIs that lyric matching uses (from `node_modules`, no Docker):
+**Spotify's sign-in did not come back to Folia?**
+Check that you signed in from the home-screen Folia, not a Safari tab, and that the Spotify app's Redirect URI matches your domain exactly (`https://<your domain>/spotify-callback.html`).
+
+**Sign-in says the account is not allowed?**
+A Spotify app in Development Mode lets only the accounts under User Management sign in; add the account there.
+
+**Folia did not follow Spotify to the next song?**
+While the iPhone is locked or Folia is in the background, iOS pauses the page; the song plays on in the Spotify app. Back in Folia, it reads again where Spotify is.
+
+**How do I get updates?**
+This repository follows Folia-Spotify. A Vercel project redeploys by itself when the repository it was deployed from gets new commits.
+
+## Local development
 
 ```bash
+npm install
 npm run dev:web
 ```
 
-Then open `http://127.0.0.1:3000` (not `localhost`, or the Spotify sign-in redirect will not match).
+This starts the web version together with the NetEase Cloud Music, QQ Music, and Kugou APIs the lyric matching uses. Open `http://127.0.0.1:3000` (not `localhost`, which Spotify does not accept). The local Redirect URI is `http://127.0.0.1:3000/spotify-callback.html`.
 
-What the web version does:
-
-- Search, playback, your playlists and library, likes, adding songs to and removing them from your playlists, creating playlists.
-- **Playing on**: as on the desktop, Folia follows the device Spotify is playing on now, and "Playing on" in the player's controls names it. Spotify needs to be open on some device first.
-- Lyrics are matched from NetEase, QQ Music, Kugou and AMLL.
-
-Limits Spotify sets for third-party apps (not something Folia can change):
-
-- Only the songs of playlists you made or collaborate on can be read. Other people's playlists, and Spotify's own ones such as Daily Mix, Discover Weekly and Release Radar, cannot. The desktop app goes through other services without these limits.
-- No Spotify lyrics, radio or explore page.
-- The sound comes from the Spotify app, so the equalizer, effects, visualizer and automix cannot reach Spotify songs (the same holds on the desktop).
-
-### Platforms in mainland China
-
-NetEase Cloud Music, QQ Music, Kugou, Bodian and Qishui serve as lyric sources only by default and stay out of the platform list. To switch to and sign in to them as in the original, turn on "Show every platform in the platform list" under Settings → Connections.
-
-## YouTube Music
-
-YouTube Music is in the desktop app only.
-
-### Signing in
-
-1. Click "Connect a streaming service" and choose YouTube Music. Folia opens a window of its own in the Chrome installed on the computer. Without Chrome it uses Edge, Chromium, Brave, Chrome Beta / Dev / Canary or Helium, in that order.
-2. Sign in to Google in that window, and close it once YouTube Music shows your account. On macOS quit the whole browser (⌘Q): closing the window is not enough.
-3. If the window was closed by mistake or is hidden behind others, press "Open the browser again" in the sign-in window.
-
-Why Chrome and not your default browser: Google does not take a sign-in in a window Folia draws itself, and YouTube Music has no sign-in for third-party apps, so after you sign in Folia reads YouTube's cookies from the browser. Only a Chromium browser lets it, and only one started on a folder of Folia's own, which keeps your everyday browsing out of it. Safari cannot be read; Dia and Arc are Chromium but do not open the address Folia gives them.
-
-Folia keeps only YouTube's cookies, sealed with the system keychain. The sign-in folder holds your whole Google sign-in, so it is deleted as soon as it has been read. Signing out deletes the cookies.
-
-### How it works
-
-- **Reading**: your playlists, liked songs, home recommendations and the explore page are YouTube Music's own pages, read as its web client with those cookies. With the interface in Traditional Chinese, YouTube's pages come in Traditional Chinese too.
-- **Playing**: Folia fetches the audio from YouTube and plays it itself. Unlike Spotify (which Folia plays by remote-controlling the Spotify app), the equalizer, effects, visualizer and automix all work on YouTube Music songs.
-- **Quality**: on the "Quality" page of the player's control panel, "Default Quality" offers Standard and Very High (Very High is Opus at about 130–160 kbit/s); a YouTube Music Premium account also gets Ultra High (about 256 kbit/s).
-- **Lyrics**: YouTube's own synced lyrics first, then the other lyric sources.
-- **Explore page**: YouTube Music's home feed, its explore page (new releases, trending), the charts, Moods & genres (a row of playlists for each category), then "like this song" rows. YouTube's own "Recently played", "Listen again" and "Forgotten favorites" are left out: "Recently played" always comes from Folia's own record.
-- **Radio page**: the personal FM starts from your liked songs; the recommended playlists come from YouTube Music's home feed.
-
-An account with no liked songs and no saved playlists or albums shows empty playlist, radio and album pages: the account has nothing there, nothing failed to load.
+To see the iPhone layout locally, switch a desktop browser's developer tools to an iPhone size. See the [technical and development notes](docs/technical.md) for deployment, environment variables, and the tech stack.
 
 ## Showcase
 
 ![visualizer](./img/visualizer.png)
-
-### Demo videos
-
-https://github.com/user-attachments/assets/af806cf1-f67f-4b88-b2e7-57db507e9e81
-
-https://github.com/user-attachments/assets/fd27f4f0-64b9-4c57-8c3b-10df767f934b
-
-https://github.com/user-attachments/assets/704f195a-2194-434b-86e8-8f36290e5cc4
-
-### Selected styles
 
 <table>
   <tr>
@@ -192,7 +169,7 @@ https://github.com/user-attachments/assets/704f195a-2194-434b-86e8-8f36290e5cc4
     <td align="center"><strong>Cappella</strong></td>
     <td align="center"><strong>Tilt</strong></td>
   </tr>
-    <tr>
+  <tr>
     <td width="50%">
       <img src="./img/preview-diorama.png" alt="Diorama preview" />
     </td>
@@ -206,111 +183,9 @@ https://github.com/user-attachments/assets/704f195a-2194-434b-86e8-8f36290e5cc4
   </tr>
 </table>
 
-Each lyric animation has its own typography, mood, and tunable parameters, giving full-screen lyrics the richness of a lyric video while staying responsive to any window size.
+## Desktop app and other features
 
-## Features
-
-| Feature | Description |
-| --- | --- |
-| Online search and playback | Search for songs, artists, or albums and play them; covers and lyrics load automatically. |
-| Local music | Import local audio files. Folia stores the index locally and never uploads file contents. See [Local Library Management](docs/local-library-management.md) (Chinese). |
-| Smart lyric matching | Local songs are matched to online lyrics and covers automatically; you can correct matches by hand. |
-| Local lyric files | Loads `.lrc`, `.vtt`, `.ttml`, `.qrc`, `.yrc`, and `.krc` files with the same name in the same folder, as well as embedded LRC lyrics. Supports the enhanced word-by-word formats produced by LDDC. |
-| Now Playing integration | Connects to a local [Now Playing](https://github.com/Widdit/now-playing-service/) service to take song, timeline, and lyric data from external players and drive Folia's stage view and full-screen lyrics. |
-| AI themes | Generates immersive backgrounds and visual parameters from a song's mood and lyrics. |
-| Multi-platform | Deploy as a web app or install the packaged desktop app. |
-| Mods (experimental) | On desktop, Folium mods can add lyric animations, backgrounds, player-page layers, commands, and more. Install officially verified mods from the [mod market](https://folium-compound.cielaniska.top). See [Mods](#mods-folium-v1x). |
-
-## Get Folia
-
-The desktop app bundles both frontend and backend, so it works right after install.
-
-### One-click deployment
-
-To put the web app online quickly, follow the [Vercel deployment guide](https://folia-site.cielaniska.top/guide/deploy-vercel).
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yu-0615/Folia-Spotify-on-iPhone)
-
-Folia also deploys to Cloudflare in one click; adapt the Vercel guide accordingly.
-
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/yu-0615/Folia-Spotify-on-iPhone)
-
-On Vercel and Cloudflare, QQ Music no longer needs a separate, always-on API instance: set `VITE_QQ_API_BASE` to `/api/qq` and add a `QQ_SESSION_SECRET` (a server-side secret, **without the `VITE_` prefix**). This setup supports login by scanning a QR code with WeChat or mobile QQ (mobile QQ requires qq-music-api 3.3.3 or later), and you must log in before playback. On Cloudflare you can also bind a Durable Object so QQ QR login uses a long-lived connection and gains QR login with the QQ Music app. For full steps, platform differences, and troubleshooting, see the [QQ Music deployment guide](docs/qq-music-deployment.md) (Chinese).
-
-Self-hosters can use the [Docker Compose full-stack deployment](deploy/docker/README.md). Access to local music folders requires a trusted HTTPS secure context; the deployment docs cover NAS reverse proxies and certificate requirements.
-
-### Direct download
-
-- **Windows / macOS / Linux**: Download Folia-Spotify from the [Releases page](https://github.com/yu-0615/Folia-Spotify/releases/latest). The macOS build is unsigned; if macOS says it is damaged on first launch, see [this note](docs/desktop/macos-app-damaged.md) (Chinese).
-- **The original Folia**: [folia-major-bin](https://aur.archlinux.org/packages/folia-major-bin) on the AUR and the community [Flatpak](https://flatpark.org/apps/top.izuna.foliamajor/) are the original, without this fork's changes.
-- **Android / iPhone**: Third-party community ports and the iPhone deployment are listed under [Mobile](#mobile) below.
-
-For Linux packages, the Wayland / Hyprland remote control window, and other desktop details, see [Technical Notes](docs/technical.md) (Chinese).
-
-### Mobile
-
-| Option | Details |
-| --- | --- |
-| **PWA (recommended)** | Deploy the web or self-hosted version, then add it to your home screen from Chrome for Android or iOS Safari to use it as a PWA. |
-| **iPhone deployment** | This repository (yu-0615/Folia-Spotify-on-iPhone): deployed to Vercel and added to the home screen from Safari on iPhone; see [iPhone deployment](#iphone-deployment) above. |
-| **Community ports (Android)** | [maimai993/folia-sonnet](https://github.com/maimai993/folia-sonnet) · [whycfawa/folia-android](https://github.com/whycfawa/folia-android) |
-| **Build it yourself (Android)** | If you are comfortable with the tooling, package the web version as an installable APK with Capacitor. See the example repository [chthollyphile/folia-sonnet](https://github.com/chthollyphile/folia-sonnet). |
-
-> [!NOTE]
-> Community ports are third-party projects maintained independently by the community, and their features differ from the official desktop version. Please report any issues to the corresponding repository.
-
-## Documentation and development
-
-For the full user guide, visit [Folia Guide](https://folia-site.cielaniska.top/guide/).
-
-Deployment, environment variables, local development, the Stage API, common scripts, and the tech stack are covered in [Technical Notes](docs/technical.md) (Chinese).
-
-Before contributing, read the [Contributing Guide](CONTRIBUTING.en.md).
-
-## Mods (Folium v1.x)
-
-> [!NOTE]
-> Mods are experimental, available in the desktop app only, and off by default. Turn them on in **Settings → Mods → Mod system**.
-
-Folium is Folia's mod platform. Mods can add lyric animation modes and background types, overlay content on the player page, add buttons and markers to the progress bar, register commands and settings sections, rewrite lyrics before they are displayed, and use native capabilities such as ffmpeg through a Node entry point. Mods run as trusted code: you confirm each mod in a native window before it is enabled, and confirm again after its files change.
-
-- **Mod market**: [folium-compound.cielaniska.top](https://folium-compound.cielaniska.top) hosts official mods and reviewed community mods. Download the zip and drag it into the Mods panel to install.
-- **Verification**: Every mod in the market carries a Folium signature and shows as **Verified** after install. Early-access mods that passed only the security review show as **Preview**. Third-party mods without a signature show as **Unverified** and still work.
-- **Developing and contributing**: The [mod development and contribution guide](docs/folium/contributing.md) walks from your first mod and local debugging through submitting to the market, review and signing, and publishing updates.
-- **API reference**: The [Folium API reference](docs/folium/api.md) is generated from the contract file and organized by registries, contexts, events, and services.
-- **Platform spec**: The [Folium spec](mods/README.md) covers manifest fields, permissions, registry semantics, events, the security model, and versioning.
-- **Example mods**: The repository's [`mods/`](mods/) folder covers lyric animations, tuning, the progress bar, player-page layers, and transparent video export.
-
-## Sync Server
-
-Folia offers an optional official sync server, `sync-server`, that syncs appearance settings and the AI theme library across devices. You host it yourself; it suits anyone who wants their color themes on every device.
-
-Deployment options:
-
-- **Cloudflare Workers / D1**: Serverless, no servers to maintain. Recommended.
-  [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/chthollyphile/folia-major/tree/main/sync-server)
-- **Docker**: See the [Docker deployment folder](deploy/docker/README.md) for the image and Compose setup.
-- **Self-hosted Node.js**: Uses SQLite; suits local machines or environments where Docker is inconvenient.
-
-For environment variables, token setup, and deployment steps, see the [Sync Server deployment guide](https://folia-site.cielaniska.top/guide/deploy-sync). Once deployed, enter the server URL and `SYNC_TOKEN` in **Settings → Connections** to turn on sync.
-
-## Local music and matching
-
-Folia reads audio metadata plus lyrics and covers from the same folder, and can fill in song details from NetEase Cloud Music, QQ Music, or Kugou. Automatic matching tries NetEase, then QQ, then Kugou. When a match is wrong, you can pick another candidate, restore the local data from the first import, or merge and split artist and album entries.
-
-For importing, rescanning, matching, entry editing, playlists, caching, and troubleshooting, see [Local Library Management](docs/local-library-management.md) (Chinese).
-
-## Community
-
-Join the Discord to chat and get help.
-
-[![Discord](https://img.shields.io/discord/1541051241822687232?logo=discord&logoColor=white&label=Join%20our%20Discord)](https://discord.gg/dMDBTHxeKd)
-
-## Contributors
-
-Thanks to everyone who has filed issues, reported bugs, suggested ideas, tested, or written code. Contributions are tracked under the all-contributors specification.
-
-The list is long, so see [Contributors](CONTRIBUTORS.md).
+The desktop app (Windows / macOS / Linux), YouTube Music, mods, the Sync Server, the local music library, and the rest of what is not part of the iPhone version are covered by [Folia-Spotify](https://github.com/yu-0615/Folia-Spotify) and [the original Folia](https://github.com/chthollyphile/folia-major). See the [Folia Guide](https://folia-site.cielaniska.top/guide/) for the full user guide.
 
 ## Legal and disclaimer
 
@@ -324,8 +199,7 @@ Please respect digital rights and support licensed music through official platfo
 
 ## Acknowledgements
 
-Special thanks to these projects and resources:
-
+- [chthollyphile/folia-major](https://github.com/chthollyphile/folia-major): the original Folia, and [its contributors](CONTRIBUTORS.md).
 - [chenmozhijin/LDDC](https://github.com/chenmozhijin/LDDC)
 - [NeteaseCloudMusicApiEnhanced](https://github.com/NeteaseCloudMusicApiEnhanced/api-enhanced)
 - [chenglou/pretext](https://github.com/chenglou/pretext)
