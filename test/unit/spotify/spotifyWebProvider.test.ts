@@ -436,6 +436,32 @@ describe('the device it plays on', () => {
         await expect(findSpotifyWebDevice()).rejects.toMatchObject({ code: 'unavailable', cause: 'no-device' });
     });
 
+    // The iPhone version: with nothing playing, the phone in the listener's hand comes before the
+    // device last seen and a computer.
+    it('takes a phone that is on before the one last seen and a computer, with nothing playing', async () => {
+        signedIn();
+        memory.set('folia_spotify_web_device', JSON.stringify({ id: 'mac-1', name: 'MacBook', kind: 'computer' }));
+        answer({
+            'GET /me/player/devices': () => reply({
+                devices: [
+                    { id: 'mac-1', name: 'MacBook', type: 'Computer', is_restricted: false },
+                    { id: 'phone-2', name: 'iPhone', type: 'Smartphone', is_restricted: false },
+                ],
+            }),
+            'GET /me/player': () => reply(undefined, 204),
+        });
+        expect(await findSpotifyWebDevice()).toEqual({ id: 'phone-2', name: 'iPhone', kind: 'phone' });
+    });
+
+    // On an iPhone the page's sound would take the audio from the Spotify app it stands in for.
+    it('lets the page\'s audio mix with other apps once a stand-in is made', async () => {
+        const audioSession = { type: 'auto' };
+        vi.stubGlobal('navigator', { audioSession });
+        const { spotifyWebStandIn } = await import('@/services/onlineMusic/spotify/web/spotifyWebPlayback');
+        spotifyWebStandIn(id('z'), 1000);
+        expect(audioSession.type).toBe('ambient');
+    });
+
     it('plays a song of the desktop app in the Spotify app, as silence for the deck, once signed in to control it', async () => {
         const spotifyRequest = vi.fn();
         vi.stubGlobal('window', { location: { origin: 'file://' }, localStorage: storage, electron: { spotifyRequest } });

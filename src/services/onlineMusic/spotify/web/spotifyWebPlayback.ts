@@ -58,6 +58,9 @@ const ELSEWHERE_UPCOMING = 20;
 const ELSEWHERE_CHECK_MS = 4000;
 // A track told is not told again for this long (the app is loading it).
 const ELSEWHERE_AGAIN_MS = 10_000;
+// How long after the app is shown again a pause of the deck is still taken for the system's
+// (see pausedBySystem).
+const SHOWN_GRACE_MS = 1500;
 
 let tell: ((notice: ProviderNotice) => void) | null = null;
 let installed = false;
@@ -83,6 +86,30 @@ let elsewhereTimer: ReturnType<typeof setInterval> | null = null;
 // app's queue): one of them the app plays is started in that list, so that the device's queue stays
 // the app's.
 let followed: { context: string; tracks: Set<string> } | null = null;
+// When the page was last shown again (visibilitychange).
+let shownAt = 0;
+
+// On an iPhone the page's sound takes the phone's audio from other apps, so the stand-in playing
+// here would pause the Spotify app it stands in for, and the two would pause each other. While a
+// stand-in is on the deck, the page's audio mixes with other apps' instead (Safari's Audio Session
+// API, iOS 16.4 on); another song puts it back.
+const setAudioSession = (type: 'ambient' | 'auto'): void => {
+    const session = typeof navigator === 'undefined' ? undefined : (navigator as Navigator & { audioSession?: { type: string } }).audioSession;
+    if (!session || session.type === type) return;
+    try {
+        session.type = type;
+        console.log(`[Spotify] The page's audio session is ${type} now`);
+    } catch (error) {
+        console.warn('[Spotify] The page\'s audio session could not be set', error);
+    }
+};
+
+// iOS pauses the page's media when the app leaves the screen (another app, the lock screen), and
+// tells of it while the page is hidden or as it is shown again: that pause is not the listener's,
+// and the Spotify app plays on. Back on the screen, what Spotify plays is followed (checkElsewhere).
+const pausedBySystem = (): boolean => (
+    typeof document !== 'undefined' && (document.visibilityState === 'hidden' || Date.now() - shownAt < SHOWN_GRACE_MS)
+);
 // Stand-in URL → Spotify track id, oldest first.
 const standIns = new Map<string, string>();
 
@@ -121,6 +148,7 @@ const onDeck = (url: string): boolean => (
 /** The stand-in URL for a track: the one made for it before, or a new one. */
 export const spotifyWebStandIn = (trackId: string, durationMs: number): string => {
     install();
+    setAudioSession('ambient');
     const known = [...standIns].find(([, id]) => id === trackId)?.[0];
     if (known) {
         standIns.delete(known);
@@ -440,6 +468,7 @@ const onPlaying = (event: Event): void => {
     if (!element) return;
     pausedNearEndAt = null;
     const trackId = trackOnDeck(element);
+    setAudioSession(trackId ? 'ambient' : 'auto');
     if (!trackId) {
         // Another song plays: the device stops.
         if (deck) {
@@ -463,6 +492,10 @@ const onPause = (event: Event): void => {
     // of its own while the app starts its next.
     if (event.type === 'ended') {
         lastCommandAt = Date.now();
+        return;
+    }
+    if (pausedBySystem()) {
+        console.log('[Spotify] The deck was paused as the app left the screen: the device plays on');
         return;
     }
     enqueue(() => command(pauseOn));
@@ -497,6 +530,9 @@ function install(): void {
     document.addEventListener('ended', onPause, true);
     document.addEventListener('seeked', onSeeked, true);
     document.addEventListener('emptied', onEmptied, true);
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') shownAt = Date.now();
+    });
     useAudioSettingsStore.subscribe((state, previous) => {
         if (state.volume === previous.volume && state.isMuted === previous.isMuted) return;
         // Sent once the volume rests; a device that keeps its own volume answers 403.

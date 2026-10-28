@@ -7,7 +7,7 @@ import { callSpotifyWeb } from './spotifyWebApi';
 // The Spotify Connect device the songs sound on: always one of the account's own Spotify apps (a
 // phone, the Spotify app on a computer, a speaker), which Folia controls through the Web API. Nothing
 // is chosen here: it is the device Spotify plays on now, as last seen (the listener moves the playback
-// in a Spotify app), and with none playing, the one last seen, else a computer, else any on now.
+// in a Spotify app), and with none playing, a phone, else the one last seen, else a computer, else any on now.
 // The device last seen is kept in this browser; playing on it is spotifyWebPlayback.ts.
 
 const DEVICE_KEY = 'folia_spotify_web_device';
@@ -62,14 +62,18 @@ export const subscribeSpotifyWebDevice = (listener: () => void): (() => void) =>
 };
 
 /**
- * The device to play on now: the one Spotify plays on, else the one last seen if it is on, else a
- * computer that is on, else any device on. Without a Spotify app open anywhere, there is none.
+ * The device to play on now: the one Spotify plays on, else a phone that is on (the one in the
+ * listener's hand, for the iPhone version: the last seen first), else the one last seen if it is on,
+ * else a computer that is on, else any device on. Without a Spotify app open anywhere, there is none.
  */
 export const findSpotifyWebDevice = async (): Promise<ProviderPlaybackDevice> => {
     const playing = noteSpotifyWebDevice((await callSpotifyWeb<{ device?: WireDevice } | undefined>('/me/player'))?.device);
     if (playing) return playing;
     const on = ((await callSpotifyWeb<{ devices?: WireDevice[] }>('/me/player/devices'))?.devices ?? []).filter(device => deviceOf(device));
-    const wire = on.find(device => device.id === current?.id)
+    const phones = on.filter(device => deviceOf(device)?.kind === 'phone');
+    const wire = phones.find(device => device.id === current?.id)
+        ?? phones[0]
+        ?? on.find(device => device.id === current?.id)
         ?? on.find(device => (device.type ?? '').toLowerCase() === 'computer')
         ?? on[0];
     const device = noteSpotifyWebDevice(wire);
