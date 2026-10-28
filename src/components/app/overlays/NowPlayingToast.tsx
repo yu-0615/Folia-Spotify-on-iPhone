@@ -218,7 +218,7 @@ const NowPlayingToast: React.FC<NowPlayingToastProps> = ({
                             // cover" from "fell back" - the difference used to be invisible from
                             // the outside, which is how the blank square went unnoticed.
                             data-toast-cover={coverSrc ? 'image' : 'placeholder'}
-                            className={`relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full ${
+                            className={`relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg ${
                                 isDaylight ? 'bg-zinc-200' : 'bg-zinc-800'
                             }`}
                         >
