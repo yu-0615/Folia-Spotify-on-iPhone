@@ -48,8 +48,12 @@ Folia 是一個以全螢幕沉浸式歌詞為核心的音樂播放器，有多�
 | 控制面板 | 寬 216px（和 Folia-on-iPhone 一樣，分頁改成圖示），開關鈕往內移 |
 | Spotify 登入 | 從主畫面打開時，Spotify 的登入頁在 Folia 裡打開，同意後自動回到 Folia（Folia-Spotify 是另開視窗，在主畫面 App 裡回不來） |
 | Now Playing | 可以用 `?npHost=` 指定要連的主機，HTTPS 頁面自動改用 `wss` |
+| 和 Spotify App 一起播放 | Folia 靠一段靜音音訊對時間。iPhone 上這段音訊會和其他 App 的聲音混在一起播放，不會打斷 Spotify App（用的是 Safari 的 Audio Session 功能，**需要 iOS 16.4 以上**）；離開 Folia 時 iOS 暫停它，也不會跟著把 Spotify 暫停 |
 
 ## 部署到 iPhone
+
+> [!IMPORTANT]
+> 需要 **iOS 16.4 以上**。較舊的 iOS 沒有 Safari 的 Audio Session 功能，Folia 對時間用的靜音音訊會打斷 Spotify App，兩邊會互相暫停。
 
 ### 1. 部署到 Vercel
 

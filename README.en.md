@@ -48,8 +48,12 @@ The features are those of Folia-Spotify, with these changes for the iPhone:
 | Control panel | 216px wide as in Folia-on-iPhone (its tabs become icons), with its toggle moved inward |
 | Spotify sign-in | Opened from the home screen, Spotify's sign-in page opens inside Folia and comes back to it once you agree (Folia-Spotify opens a separate window, which never comes back to a home-screen app) |
 | Now Playing | The host to connect to can be set with `?npHost=`, and an HTTPS page uses `wss` |
+| Playing alongside the Spotify app | Folia keeps time with a stretch of silent audio. On the iPhone that audio mixes with other apps' sound instead of interrupting the Spotify app (through Safari's Audio Session API, **iOS 16.4 or later**), and when iOS pauses it as you leave Folia, Spotify is not paused with it |
 
 ## Deploy to iPhone
+
+> [!IMPORTANT]
+> Needs **iOS 16.4 or later**. Older iOS versions lack Safari's Audio Session API, so the silent audio Folia keeps time with interrupts the Spotify app, and the two pause each other.
 
 ### 1. Deploy to Vercel
 
