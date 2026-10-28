@@ -337,7 +337,7 @@ const FloatingPlayerControls: React.FC<FloatingPlayerControlsProps> = ({
                 className={`absolute left-1/2 -translate-x-1/2 z-60 w-full flex justify-center pointer-events-none
                     ${currentView === 'home'
                         ? 'max-w-[calc(100vw-120px)] md:max-w-[min(calc(32rem_+_var(--folium-player-bar-extra,0px)),calc(100vw-120px))]'
-                        : 'max-w-[min(calc(32rem_+_var(--folium-player-bar-extra,0px)),100vw)] px-4'}`}
+                        : 'max-w-[min(calc(45rem_+_var(--folium-player-bar-extra,0px)),100vw)] px-4'}`}
                 style={{ bottom: bottomBarBottomPx }}
                 onUpdate={invalidateLayout}
             >

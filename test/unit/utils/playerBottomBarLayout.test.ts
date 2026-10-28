@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
     PLAYER_BOTTOM_BAR_BASE_OFFSET_PX,
+    PLAYER_BOTTOM_BAR_DOWN_NUDGE_PX,
     PLAYER_BOTTOM_BAR_SUBTITLE_CLEARANCE_PX,
+    PLAYER_SUBTITLE_BOTTOM_PX,
     clampPlayerBottomBarOffset,
     resolvePlayerBottomBarMaxOffset,
     resolvePlayerBottomComponentBottomPx,
@@ -53,16 +55,17 @@ describe('clampPlayerBottomBarOffset', () => {
 });
 
 describe('resolvePlayerBottomComponentBottomPx', () => {
-    it('preserves each component original bottom at the default baseline', () => {
-        expect(resolvePlayerBottomComponentBottomPx(32, 16)).toBe(16);
-        expect(resolvePlayerBottomComponentBottomPx(32, 24)).toBe(24);
-        expect(resolvePlayerBottomComponentBottomPx(32, 112)).toBe(112);
+    // iPhone 版把贴底的元件一起往下挪 PLAYER_BOTTOM_BAR_DOWN_NUDGE_PX。
+    it('moves each component original bottom down by the iPhone nudge at the default baseline', () => {
+        expect(resolvePlayerBottomComponentBottomPx(32, 16)).toBe(16 - PLAYER_BOTTOM_BAR_DOWN_NUDGE_PX);
+        expect(resolvePlayerBottomComponentBottomPx(32, 24)).toBe(24 - PLAYER_BOTTOM_BAR_DOWN_NUDGE_PX);
+        expect(resolvePlayerBottomComponentBottomPx(32, 112)).toBe(112 - PLAYER_BOTTOM_BAR_DOWN_NUDGE_PX);
     });
 
     it('adds the same lift to bottom components on every page', () => {
-        expect(resolvePlayerBottomComponentBottomPx(152, 16)).toBe(136);
-        expect(resolvePlayerBottomComponentBottomPx(152, 24)).toBe(144);
-        expect(resolvePlayerBottomComponentBottomPx(152, 112)).toBe(232);
+        expect(resolvePlayerBottomComponentBottomPx(152, 16)).toBe(136 - PLAYER_BOTTOM_BAR_DOWN_NUDGE_PX);
+        expect(resolvePlayerBottomComponentBottomPx(152, 24)).toBe(144 - PLAYER_BOTTOM_BAR_DOWN_NUDGE_PX);
+        expect(resolvePlayerBottomComponentBottomPx(152, 112)).toBe(232 - PLAYER_BOTTOM_BAR_DOWN_NUDGE_PX);
     });
 });
 
@@ -77,13 +80,13 @@ describe('resolvePlayerSubtitleBottomFromPresence', () => {
             .toBe(PLAYER_BOTTOM_BAR_BASE_OFFSET_PX);
     });
 
-    it('reproduces the original 112 at the baseline with the bar present', () => {
-        expect(resolvePlayerSubtitleBottomFromPresence(PLAYER_BOTTOM_BAR_BASE_OFFSET_PX, 1)).toBe(112);
+    it('lands on the subtitle bottom at the baseline with the bar present', () => {
+        expect(resolvePlayerSubtitleBottomFromPresence(PLAYER_BOTTOM_BAR_BASE_OFFSET_PX, 1)).toBe(PLAYER_SUBTITLE_BOTTOM_PX);
     });
 
     it('interpolates the whole gap, lift included, midway through the transition', () => {
-        // presence 0.5：基线 32 + 一半的 (168 抬高量 + 80 净空)
-        expect(resolvePlayerSubtitleBottomFromPresence(200, 0.5)).toBe(32 + 0.5 * (168 + 80));
+        // presence 0.5：基线 32 + 一半的 (168 抬高量 + 净空)
+        expect(resolvePlayerSubtitleBottomFromPresence(200, 0.5)).toBe(32 + 0.5 * (168 + PLAYER_BOTTOM_BAR_SUBTITLE_CLEARANCE_PX));
     });
 
     it('stays pinned to the baseline while the bar is absent, whatever the offset', () => {
@@ -92,14 +95,14 @@ describe('resolvePlayerSubtitleBottomFromPresence', () => {
 });
 
 describe('resolveUnscaledSubtitleBarOffset', () => {
-    it('keeps the subtitle 112 box pixels up once the stage is scaled', () => {
+    it('keeps the subtitle its bottom distance in box pixels up once the stage is scaled', () => {
         for (const scale of [1, 0.63, 0.4]) {
             const stageBottom = resolvePlayerSubtitleBottomFromPresence(resolveUnscaledSubtitleBarOffset(scale), 1);
-            expect(stageBottom * scale).toBeCloseTo(112);
+            expect(stageBottom * scale).toBeCloseTo(PLAYER_SUBTITLE_BOTTOM_PX);
         }
     });
 
-    it('keeps the subtitle 112 box pixels up on a zoomed stage cut below the box', () => {
+    it('keeps the subtitle its bottom distance in box pixels up on a zoomed stage cut below the box', () => {
         const box = { width: 1158, height: 1038 };
         for (const zoom of [1, 1.15, 1.3]) {
             const framed = frameStage({ width: 1840, height: 1160 }, box, 1, true, zoom)!;
@@ -107,7 +110,7 @@ describe('resolveUnscaledSubtitleBarOffset', () => {
             const offset = resolveUnscaledSubtitleBarOffset(scale, stageBelowBox(framed, box));
             const subtitleBottomInStage = resolvePlayerSubtitleBottomFromPresence(offset, 1);
             const stageBottomInBox = framed.frame.top + framed.place.top + framed.stage.height * scale;
-            expect(box.height - (stageBottomInBox - subtitleBottomInStage * scale)).toBeCloseTo(112);
+            expect(box.height - (stageBottomInBox - subtitleBottomInStage * scale)).toBeCloseTo(PLAYER_SUBTITLE_BOTTOM_PX);
         }
     });
 

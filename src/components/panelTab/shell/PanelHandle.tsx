@@ -325,7 +325,7 @@ const PanelHandle: React.FC<PanelHandleProps> = ({
                     ref={layoutRef}
                     onUpdate={invalidateLayout}
                     style={{ bottom: bottomBarBottomPx }}
-                    className="pointer-events-auto fixed right-0 z-[60] pr-4 md:pr-8 group w-20 flex justify-end"
+                    className="pointer-events-auto fixed right-6 z-[60] pr-4 md:pr-8 group w-20 flex justify-end"
                     onMouseEnter={handleToggleButtonMouseEnter}
                     onMouseLeave={handleToggleButtonMouseLeave}
                     onPointerDown={handleToggleHotspotPointerDown}
@@ -338,7 +338,7 @@ const PanelHandle: React.FC<PanelHandleProps> = ({
                                 width: '96px',
                                 transition: 'opacity 200ms ease-out',
                             }}
-                            className={`absolute right-0 top-0 h-12 rounded-full border pointer-events-none z-0 ${
+                            className={`absolute right-6 top-0 h-12 rounded-full border pointer-events-none z-0 ${
                                 isGuideLineVisible || isDragging
                                     ? 'opacity-100'
                                     : 'opacity-0'

@@ -137,7 +137,7 @@ test.describe('切歌交接', () => {
     });
 });
 
-test('短标题也不会把卡片缩到 240px 以下', async ({ mount, page }) => {
+test('短标题也不会把卡片缩到 200px 以下', async ({ mount, page }) => {
     await mount('nowPlayingToastTransitionBorder');
     const card = page.locator('[data-toast-card]');
     await expect(card).toBeVisible();
@@ -149,21 +149,14 @@ test('短标题也不会把卡片缩到 240px 以下', async ({ mount, page }) =
     await page.waitForTimeout(600);
 
     const box = (await card.boundingBox())!;
-    expect(box.width).toBeGreaterThanOrEqual(240);
+    expect(box.width).toBeGreaterThanOrEqual(200);
 });
 
-// 描边自己就沿着上边缘画，两条亮线隔着几个像素并排，读起来是好几层边框套在一起。
-test('混音期间收掉顶部的扫光条', async ({ mount, page }) => {
+// iPhone 版的卡片是胶囊形，不画顶部的扫光条：描边沿着上边缘画，再叠一条亮线就是两层边框。
+test('卡片没有顶部的扫光条', async ({ mount, page }) => {
     await mount('nowPlayingToastTransitionBorder');
-    const sheen = page.locator('[data-toast-sheen]');
-    await expect(sheen).toBeAttached();
-    await page.waitForTimeout(700);
-    expect(Number(await sheen.evaluate(el => getComputedStyle(el).opacity))).toBeGreaterThan(0.9);
-
-    await page.locator('[data-probe-action="cue"]').click();
-    await expect(page.locator('canvas')).toBeVisible({ timeout: 10_000 });
-    await page.waitForTimeout(900);
-    expect(Number(await sheen.evaluate(el => getComputedStyle(el).opacity))).toBeLessThan(0.05);
+    await expect(page.locator('[data-toast-card]')).toBeVisible();
+    await expect(page.locator('[data-toast-sheen]')).toHaveCount(0);
 });
 
 // 封面 URL 非空但加载不出来（探针里的 track-b 指向一个失效 blob，形状和媒体缓存 revoke 掉的

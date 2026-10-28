@@ -1,10 +1,33 @@
 import type { NowPlayingConnectionStatus, NowPlayingLyricPayload, NowPlayingTrackSnapshot } from '../types';
 
-export const NOW_PLAYING_WS_URL = 'ws://localhost:9863/api/ws/lyric';
+// https 頁面用 wss、http 頁面用 ws（HTTPS PWA 連 TLS tunnel 必須 wss）
+const nowPlayingWsScheme = (): string =>
+    (typeof window !== 'undefined' && window.location.protocol === 'https:') ? 'wss' : 'ws';
+
+// 預設要連的 now-playing 主機（PWA 從主畫面開、沒帶 ?npHost= 時用這個）
+const DEFAULT_NP_HOST = 'starring-institution-oecd-redeem.trycloudflare.com';
+
+const resolveNowPlayingHost = (): string => {
+    if (typeof window === 'undefined') return DEFAULT_NP_HOST;
+    try {
+        const q = new URLSearchParams(window.location.search).get('npHost');
+        if (q) {
+            window.localStorage.setItem('folia:npHost', q);
+            return q;
+        }
+        const stored = window.localStorage.getItem('folia:npHost');
+        if (stored) return stored;
+    } catch { /* ignore */ }
+    return DEFAULT_NP_HOST;
+};
+
+// 從 host 組出 WS 位址；OBS 來源頁也會用到
+export const buildNowPlayingWsUrl = (host: string): string =>
+    `${nowPlayingWsScheme()}://${host}/api/ws/lyric`;
+
+export const NOW_PLAYING_WS_URL = buildNowPlayingWsUrl(resolveNowPlayingHost());
 const NOW_PLAYING_RECONNECT_DELAY_MS = 2000;
 
-// Build the now-playing lyric WS URL from a host (e.g. 'localhost:9863'); lets the OBS web page pick the endpoint via a URL param.
-export const buildNowPlayingWsUrl = (host: string): string => `ws://${host}/api/ws/lyric`;
 
 type NowPlayingTrackMessage = {
     author?: string;

@@ -4,6 +4,9 @@ import { useStageSettingsStore } from '../../../../stores/useStageSettingsStore'
 import { clampCardPoint, relativeCardPosition, resolveCardPoint, type CardViewport, type NowPlayingCardPosition } from '../../../../utils/nowPlayingCardPosition';
 import { useNowPlayingCardLayoutStore } from './nowPlayingCardLayoutStore';
 
+// Where the card sits until it is moved: clear of the iPhone's rounded corner and notch.
+const DEFAULT_LEFT_PX = 36;
+
 // Pointer-frequency positions stay in MotionValues; only Save writes the settings store.
 export const useNowPlayingCardPosition = (
     frame: RefObject<HTMLDivElement | null>,
@@ -14,7 +17,7 @@ export const useNowPlayingCardPosition = (
 ) => {
     const saved = useStageSettingsStore(state => state.stageTrackPillPosition);
     const positioning = useNowPlayingCardLayoutStore(state => state.isPositioning);
-    const left = useMotionValue(24);
+    const left = useMotionValue(DEFAULT_LEFT_PX);
     const top = useMotionValue(0);
     const draft = useRef<NowPlayingCardPosition | null>(saved);
     const dragging = useRef<{ id: number; dx: number; dy: number } | null>(null);
@@ -108,7 +111,7 @@ export const useNowPlayingCardPosition = (
 
     return {
         positioning, save, cancel: finish, reset,
-        style: saved !== null || positioning ? { left, top } : { left: 24, bottom },
+        style: saved !== null || positioning ? { left, top } : { left: DEFAULT_LEFT_PX, bottom },
         handlers: { onPointerDown, onPointerMove, onPointerUp, onPointerCancel: onPointerUp, onLostPointerCapture: () => { dragging.current = null; }, onKeyDown },
     };
 };

@@ -203,26 +203,12 @@ const NowPlayingToast: React.FC<NowPlayingToastProps> = ({
                         animate={{ opacity: 1, x: 0 }}
                         whileTap={onActivate && !isPositioning ? { opacity: 0.85 } : undefined}
                         transition={{ duration: 0.35, ease: 'easeOut' }}
-                        className={`relative flex min-w-[min(240px,calc(100vw-48px))] max-w-[calc(100vw-48px)] items-center gap-3 overflow-hidden rounded-2xl border p-2 pr-4 text-left backdrop-blur-xl shadow-lg transition-colors ${
+                        className={`relative flex min-w-[min(200px,calc(100vw-48px))] max-w-[calc(100vw-48px)] items-center gap-2 overflow-hidden rounded-full border p-2 pl-3 pr-3 text-left backdrop-blur-xl shadow-lg transition-colors ${
                             isDaylight ? 'border-black/10 bg-white/35 text-zinc-900' : 'border-white/10 bg-black/35 text-white'
                         } ${isPositioning ? 'pointer-events-auto cursor-grab select-none active:cursor-grabbing' : onActivate
                             ? `pointer-events-auto cursor-pointer ${isDaylight ? 'hover:bg-white/55' : 'hover:bg-black/55'}`
                             : ''}`}
                     >
-                        {/* 顶部光线（进场的横向扫光）。混音期间收掉：描边现在正压在卡片边框上，
-                            再叠一条亮线就是同一条边上两层东西，读起来是好几层边框套在一起。 */}
-                        <motion.span
-                            aria-hidden
-                            data-toast-sheen=""
-                            initial={{ scaleX: 0 }}
-                            animate={{ scaleX: 1, opacity: transitionCue ? 0 : 1 }}
-                            transition={{ duration: 0.5, ease: 'easeOut' }}
-                            className={`absolute inset-x-0 top-0 h-[2px] origin-left ${
-                                isDaylight
-                                    ? 'bg-gradient-to-r from-transparent via-black/40 to-transparent'
-                                    : 'bg-gradient-to-r from-transparent via-white/50 to-transparent'
-                            }`}
-                        />
                         {/* 封面和文字块也带 layout：卡片的尺寸补间是靠 transform 做的，途中
                             没有自己 layout 的子节点会被一起拉扁。带上它俩，framer 会逐层把缩放
                             反解掉，封面不变形、歌名不横向压扁。 */}
@@ -232,7 +218,7 @@ const NowPlayingToast: React.FC<NowPlayingToastProps> = ({
                             // cover" from "fell back" - the difference used to be invisible from
                             // the outside, which is how the blank square went unnoticed.
                             data-toast-cover={coverSrc ? 'image' : 'placeholder'}
-                            className={`relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg ${
+                            className={`relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full ${
                                 isDaylight ? 'bg-zinc-200' : 'bg-zinc-800'
                             }`}
                         >
@@ -259,7 +245,7 @@ const NowPlayingToast: React.FC<NowPlayingToastProps> = ({
                             )}
                             {!coverSrc && <Music size={18} className={isDaylight ? 'text-black/35' : 'text-white/35'} />}
                         </motion.div>
-                        <motion.div layout className="min-w-0 max-w-[200px] flex-1">
+                        <motion.div layout className="min-w-0 max-w-[175px] flex-1">
                             {/* 正在播放 / 接下来播放：歌名上方。切歌那一刻整张卡片不重挂，所以这
                                 一行是自己淡入淡出换掉的，不跟着进场动画走。
                                 高度写死成和 leading 一样的 10px：mode="wait" 换字的中途这一行是

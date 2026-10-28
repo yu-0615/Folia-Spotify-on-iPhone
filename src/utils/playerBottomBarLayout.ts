@@ -9,7 +9,7 @@ export const PLAYER_BOTTOM_BAR_BASE_OFFSET_PX = 32;
  * 字幕层原本硬编码的 `112` 减去基线 `32`，即胶囊之上要留出的净空。
  * 抽出来是为了让字幕跟着基线走，而不是继续和一个魔数绑死。
  */
-export const PLAYER_BOTTOM_BAR_SUBTITLE_CLEARANCE_PX = 80;
+export const PLAYER_BOTTOM_BAR_SUBTITLE_CLEARANCE_PX = -20;
 
 /** 展开态胶囊的高度预留（标题行 + 48px 播放按钮行 + 进度行 + p-3），用于算上限。 */
 const EXPANDED_CAPSULE_HEIGHT_PX = 132;
@@ -37,11 +37,13 @@ export const clampPlayerBottomBarOffset = (offsetPx: number, viewportHeightPx: n
     return Math.min(max, Math.max(PLAYER_BOTTOM_BAR_BASE_OFFSET_PX, Math.round(offsetPx)));
 };
 
-/** 保留组件原有底距，只叠加全局基线相对默认值的抬升量。 */
+/** 全域把貼底元件一起往下移的量（0 = 原位，越大越貼底）。 */
+export const PLAYER_BOTTOM_BAR_DOWN_NUDGE_PX = 15;
+
 export const resolvePlayerBottomComponentBottomPx = (
     globalOffsetPx: number,
     componentBaseBottomPx: number,
-): number => componentBaseBottomPx + globalOffsetPx - PLAYER_BOTTOM_BAR_BASE_OFFSET_PX;
+): number => componentBaseBottomPx + globalOffsetPx - PLAYER_BOTTOM_BAR_BASE_OFFSET_PX - PLAYER_BOTTOM_BAR_DOWN_NUDGE_PX;
 
 /**
  * 字幕层的 bottom，把「控制条在不在」表达成 0..1 的连续量，好让这一段单独走 spring。
