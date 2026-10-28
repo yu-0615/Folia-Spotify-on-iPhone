@@ -479,6 +479,8 @@ button.lattice-tools-slider-icon[aria-pressed="true"] { color: var(--text-accent
     );
 }
 
-@media (max-width: 640px) {
-    .lattice-tools { right: 16px; bottom: 16px; }
+/* iPhone 版：右距和播放页的面板开关一样（PanelHandle 的 right-6 加 pr-4 / md:pr-8），按钮在两页落在同一处。 */
+.lattice-tools { right: 3.5rem; }
+@media (max-width: 767px) {
+    .lattice-tools { right: 2.5rem; }
 }

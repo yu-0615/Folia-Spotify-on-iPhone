@@ -4,7 +4,6 @@ import { CircleHelp, Command, Layers3, Settings2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useLatticeSettingsStore } from '../../stores/useLatticeSettingsStore';
 import { openCommandPalette } from '../../stores/useAppViewStore';
-import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { usePlayerBottomBarBottomPx } from '../../hooks/usePlayerBottomBarBottomPx';
 import { settingsTokens } from '../modal/settings/kit/kitTheme';
 import PlaybackDeviceRow from '../panelTab/controls/PlaybackDeviceRow';
@@ -93,8 +92,8 @@ export function WallToolsSurface({ idPrefix, label, isDaylight, destination, ent
     const handleToggleLatticeLights = useLatticeSettingsStore(state => state.handleToggleLatticeLights);
     const tintEnabled = useLatticeSettingsStore(state => state.latticePosterTintEnabled);
     const handleToggleLatticePosterTint = useLatticeSettingsStore(state => state.handleToggleLatticePosterTint);
-    const isWideLayout = useMediaQuery('(min-width: 640px)');
-    const bottomPx = usePlayerBottomBarBottomPx(isWideLayout ? 24 : 16);
+    // iPhone 版：和播放页右下角的面板开关落在同一处（同一条底边基线、同样的右距，见 WallToolsButton.css）。
+    const bottomPx = usePlayerBottomBarBottomPx();
     // stack 的 max-height 要减掉按钮此刻的底距（随底栏抬升量变），经 CSS 变量交给样式。
     const bottomVar = useTransform(bottomPx, value => `${value}px`);
     const host = useWallToolsHost();
