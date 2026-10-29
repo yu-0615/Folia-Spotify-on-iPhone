@@ -13,6 +13,7 @@ import { installFoliumHomePageDismissal } from './components/app/home/foliumHome
 import { installLibrarySuiteChromeCommands } from './library/app/installLibrarySuiteChromeCommands';
 import { noteFoliumFirstScreenMounted, startFoliumForMainWindow } from './mods/runtime/mainWindowStart';
 import { installNativeDragGuard } from './utils/nativeDragGuard';
+import { installZhHantLyrics } from './components/app/zhHantLyrics/installZhHantLyrics';
 import { bootNavidromeServerPreset } from './services/navidromeServerPreset';
 import { isNavidromeEnabled } from './services/navidromeService';
 import { setNavidromeEnabledState } from './stores/useLibraryStore';
@@ -88,6 +89,8 @@ const renderApp = () => root.render(
 // registry, so the commands are put into its list here, before anything renders (main window only,
 // like the mod commands below). A clashing execute shortcut throws here, at startup.
 if (isMainApp) installLibrarySuiteChromeCommands();
+// iPhone 版内建的简转繁（设置 → 歌词）。
+if (isMainApp) installZhHantLyrics();
 
 const bootFolium = async () => {
     if (!isMainApp) return;

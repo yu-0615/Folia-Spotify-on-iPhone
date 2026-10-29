@@ -16,6 +16,7 @@ import { librarySuitePickerSurface } from '../surfaces/librarySuitePickerSurface
 import { libraryWallLookCommands } from './libraryWallLookCommands';
 import { openCurrentPagePonder } from '../../../services/ponder/pagePonderTarget';
 import { copyText } from '../../../utils/system/clipboard';
+import { useZhHantLyricsStore } from '../../app/zhHantLyrics/zhHantLyricsStore';
 
 // src/components/command-palette/commands/settingsCommands.ts
 // Commands in the `settings` group: settings subviews, app toggles, theme, sync, and desktop-only switches.
@@ -70,6 +71,17 @@ export const settingsCommands: CommandPaletteCommand[] = [
     createSettingsAnchorCommand('settings-grid-card-style', 'Grid card style', 'Jump to how the home grid draws its cards', ['card style', 'polaroid', 'grid style', '卡片样式'], 'grid3dCardStyle', GRID_ONLY),
     createSettingsCommand('settings-general', 'General settings', 'Open general app preferences', ['general', 'language settings', 'locale', '通用', '语言'], 'options', 'general'),
     createSettingsAnchorCommand('settings-home-tabs', 'Home tab visibility', 'Choose which tabs the home screen shows', ['hide tabs', 'home tabs', '首页标签'], 'homeTabsVisibility'),
+    createToggleCommand(
+        'zh-hant-lyrics-toggle',
+        'settings',
+        'Simplified to Traditional lyrics',
+        'Turn showing Simplified Chinese lyrics in Traditional characters on or off',
+        ['traditional chinese', 'opencc', '简转繁', '繁体', '繁體', '歌词转繁体'],
+        () => {
+            const store = useZhHantLyricsStore.getState();
+            store.setEnabled(!store.enabled);
+        },
+    ),
     createToggleCommand(
         'home-card-position-toggle',
         'settings',

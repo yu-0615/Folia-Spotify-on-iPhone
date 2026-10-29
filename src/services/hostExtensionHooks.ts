@@ -20,6 +20,9 @@ export interface BeforePlayDecision {
 export type BeforePlayHook = (song: SongResult) => Promise<BeforePlayDecision> | BeforePlayDecision | null;
 
 let lyricsTransformHook: LyricsTransformHook | null = null;
+// Transforms of the host's own features (built in, not a mod: the iPhone version's 簡轉繁), run in
+// order before the installed one, whether or not one is installed.
+const builtinLyricsTransforms: LyricsTransformHook[] = [];
 let beforePlayHook: BeforePlayHook | null = null;
 // Lets the extension layer say "installed, but nobody is listening right now",
 // so playSong keeps its synchronous start for users without such mods.
@@ -34,6 +37,15 @@ export const installLyricsTransformHook = (hook: LyricsTransformHook | null) => 
     lyricsTransformHook = hook;
 };
 
+/** Adds a transform of a built-in feature (see builtinLyricsTransforms); answers with the way to take it out. */
+export const addBuiltinLyricsTransform = (hook: LyricsTransformHook): (() => void) => {
+    builtinLyricsTransforms.push(hook);
+    return () => {
+        const index = builtinLyricsTransforms.indexOf(hook);
+        if (index >= 0) builtinLyricsTransforms.splice(index, 1);
+    };
+};
+
 export const installBeforePlayHook = (hook: BeforePlayHook | null, isActive: () => boolean = () => true) => {
     beforePlayHook = hook;
     beforePlayActive = isActive;
@@ -45,7 +57,7 @@ export const untransformedLyrics = (lyrics: LyricData | null): LyricData | null 
 );
 
 /*
- * Runs the installed lyrics transform. Called where the host produces lyrics
+ * Runs the built-in lyrics transforms, then the installed one. Called where the host produces lyrics
  * (end of createLyricsSetter, the word-segmentation update), not in the store
  * setter. A transformed input is transformed from its source instead, so the
  * transform never stacks. A throwing transform is contained here: lyrics must
@@ -53,9 +65,10 @@ export const untransformedLyrics = (lyrics: LyricData | null): LyricData | null 
  */
 export const applyLyricsTransform = (lyrics: LyricData | null): LyricData | null => {
     const source = untransformedLyrics(lyrics);
-    if (!source || !lyricsTransformHook) return source;
+    if (!source || (!lyricsTransformHook && builtinLyricsTransforms.length === 0)) return source;
     try {
-        const next = lyricsTransformHook(source);
+        const builtin = builtinLyricsTransforms.reduce((current, hook) => hook(current), source);
+        const next = lyricsTransformHook ? lyricsTransformHook(builtin) : builtin;
         if (next !== source) transformSources.set(next, source);
         return next;
     } catch (error) {

@@ -11,6 +11,7 @@ import { getLyricProviderPreferenceLabel } from '../../../../utils/lyrics/lyricS
 import { DEFAULT_PREFERRED_LYRIC_SOURCE } from '../../../../utils/lyrics/sourcePriority';
 import { Button, FoldedGroup, Group, OrderList, Reveal, Row, Segmented, Select, Toggle, Value, option, type SettingsGroupDef, type SettingsOptionDef } from '../kit';
 import { useSettingsPage } from './settingsPageContext';
+import ZhHantLyricsGroup, { ZH_HANT_LYRICS_OPTIONS } from '../../../app/zhHantLyrics/ZhHantLyricsGroup';
 
 // src/components/modal/settings/pages/LyricsPage.tsx
 // The 歌词 page: where a song's lyrics come from, the two tools that shift and filter them (their
@@ -30,7 +31,7 @@ const O = {
     formatOrder: option(FORMATS, 'localLyricFormatOrderList', 'options.localLyricFormatOrderList'),
 };
 
-export const OPTIONS: SettingsOptionDef[] = Object.values(O);
+export const OPTIONS: SettingsOptionDef[] = [...Object.values(O), ...ZH_HANT_LYRICS_OPTIONS];
 
 const LyricsPage: React.FC = () => {
     const { t } = useTranslation();
@@ -110,6 +111,8 @@ const LyricsPage: React.FC = () => {
                 </Row>
                 <Row option={O.filter} hint={t('options.lyricFilterRegexDesc')} onClick={onOpenLyricFilterSettings} />
             </Group>
+
+            <ZhHantLyricsGroup />
 
             <FoldedGroup def={FORMATS} summary={t('options.localLyricFormatOrderFirst', { format: `.${lyric.formatOrder[0]}` })}>
                 <Row
