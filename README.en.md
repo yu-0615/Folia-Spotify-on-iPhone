@@ -48,6 +48,8 @@ The features are those of Folia-Spotify, with these changes for the iPhone:
 | Control panel | 216px wide as in Folia-on-iPhone (its tabs become icons), with its toggle moved inward |
 | Spotify sign-in | Opened from the home screen, Spotify's sign-in page opens inside Folia and comes back to it once you agree (Folia-Spotify opens a separate window, which never comes back to a home-screen app) |
 | Now Playing | The host to connect to can be set with `?npHost=`, and an HTTPS page uses `wss` |
+| Radio and explore | Spotify gives third-party web apps no recommendations, so the radio tab and the explore page are made of your own listening (see [Spotify](#spotify) below) |
+| Simplified to Traditional | Built in under Settings → Lyrics and on by default: Simplified Chinese lyrics and translations are shown in Traditional characters (Taiwan characters, Taiwan characters and wording, or Hong Kong characters). Japanese lyrics and romanization stay as they are. The desktop app's 簡轉繁 mod cannot be installed on the web, so it is built in |
 | Playing alongside the Spotify app | Folia keeps time with a stretch of silent audio. On the iPhone that audio mixes with other apps' sound instead of interrupting the Spotify app (through Safari's Audio Session API, **iOS 16.4 or later**), and when iOS pauses it as you leave Folia, Spotify is not paused with it |
 
 ## Deploy to iPhone
@@ -86,11 +88,16 @@ A Safari tab and the home-screen Folia keep their data apart: signing in in a Sa
 - **Following along**: change songs or skip in the Spotify app, or let Spotify's crossfade move on early, and Folia follows.
 - **What it can do**: search, play, read your playlists and saved songs, like songs, add songs to and remove them from your playlists, and create playlists.
 - **Lyrics**: matched from NetEase Cloud Music, QQ Music, Kugou, and AMLL.
+- **Radio**: the personal FM plays on at random through the songs you played most these four weeks, these six months and of all time, and the ones you played last; the daily songs are the same songs in the day's order; the recommended lists are the latest albums and singles of the artists you play most.
+- **Explore**: your top songs of the last 4 weeks, your top artists, new from artists you listen to, your top songs of the last 6 months, your all-time favorites, and the artists you follow.
+
+> [!NOTE]
+> The radio tab and the explore page read your listening, through two new permissions (`user-top-read`, `user-read-recently-played`). If you signed in before this update, sign out of Spotify in Folia and sign in again, choosing Agree.
 
 Spotify's limits on third-party web apps (not something Folia can change):
 
 - Only playlists you created or collaborate on can be read. Other people's playlists, and Spotify's own ones such as Daily Mix, Discover Weekly, and Release Radar, cannot. Daily Mix is read only by [the Folia-Spotify desktop app](https://github.com/yu-0615/Folia-Spotify).
-- There are no Spotify lyrics, and no radio or explore page.
+- There are no Spotify lyrics, recommendations, related artists or new releases, so the radio tab and the explore page can only be made of your own listening, and bring no songs you have not heard.
 - The sound comes from the Spotify app, so the equalizer, effects, visualizer, and automix cannot reach Spotify's songs.
 
 ### Music platforms in mainland China
@@ -108,6 +115,9 @@ https://<your domain>/?npHost=<tunnel host>
 Open that address once and Folia remembers the host, including when opened from the home screen. With a new tunnel, open it once again with the new host.
 
 ## FAQ
+
+**The radio tab or the explore page is empty?**
+If you signed in before this update, sign out of Spotify and sign in again to allow reading your listening. A new account with little listening has less to show.
 
 **Spotify's sign-in did not come back to Folia?**
 Check that you signed in from the home-screen Folia, not a Safari tab, and that the Spotify app's Redirect URI matches your domain exactly (`https://<your domain>/spotify-callback.html`).

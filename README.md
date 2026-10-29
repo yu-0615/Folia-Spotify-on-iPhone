@@ -48,6 +48,8 @@ Folia 是一個以全螢幕沉浸式歌詞為核心的音樂播放器，有多�
 | 控制面板 | 寬 216px（和 Folia-on-iPhone 一樣，分頁改成圖示），開關鈕往內移 |
 | Spotify 登入 | 從主畫面打開時，Spotify 的登入頁在 Folia 裡打開，同意後自動回到 Folia（Folia-Spotify 是另開視窗，在主畫面 App 裡回不來） |
 | Now Playing | 可以用 `?npHost=` 指定要連的主機，HTTPS 頁面自動改用 `wss` |
+| 電台和探索頁 | Spotify 不給第三方網頁應用推薦，所以電台和探索頁改用你自己的收聽紀錄做成（見下方 [Spotify](#spotify)） |
+| 簡轉繁 | 內建在「設定 → 歌詞」，預設開啟：把簡體歌詞和翻譯換成繁體（台灣字形、台灣字形與用語或香港字形）。日文歌的原文和羅馬音不轉。桌面版的「簡轉繁」模組在網頁版裝不了，所以做成內建的 |
 | 和 Spotify App 一起播放 | Folia 靠一段靜音音訊對時間。iPhone 上這段音訊會和其他 App 的聲音混在一起播放，不會打斷 Spotify App（用的是 Safari 的 Audio Session 功能，**需要 iOS 16.4 以上**）；離開 Folia 時 iOS 暫停它，也不會跟著把 Spotify 暫停 |
 
 ## 部署到 iPhone
@@ -86,11 +88,16 @@ Safari 分頁和主畫面的 Folia 各存各的資料，在 Safari 分頁裡登�
 - **跟著換歌**：在 Spotify App 裡換歌、跳到下一首，或 Spotify 開了淡入淡出提早換歌，Folia 都會跟上。
 - **能做的事**：搜尋、播放、讀取你的歌單和收藏、按讚、把歌加入或移出你的歌單、建立歌單。
 - **歌詞**：從網易雲、QQ 音樂、酷狗、AMLL 匹配。
+- **電台**：私人 FM 從你這四週、這半年、一直以來最常聽的歌和最近播放的歌裡隨機接著放；每日推薦是同一批歌按當天的順序排；推薦歌單是你常聽歌手的最新專輯和單曲。
+- **探索頁**：最近四週常聽、你最常聽的歌手、常聽歌手的新作、近半年常聽、一直愛聽、你追蹤的歌手。
+
+> [!NOTE]
+> 電台和探索頁要讀你的收聽紀錄，用到兩項新權限（`user-top-read`、`user-read-recently-played`）。在這次更新之前登入的，要在 Folia 裡登出 Spotify 再登入一次，按「同意」允許。
 
 Spotify 對第三方網頁應用的限制（不是 Folia 能改的）：
 
 - 只讀得到你自己建立或參與協作的歌單。別人的歌單，以及 Daily Mix、Discover Weekly、Release Radar 這類 Spotify 自己做的歌單都讀不到。Daily Mix 只有 [Folia-Spotify 的桌面版](https://github.com/yu-0615/Folia-Spotify) 讀得到。
-- 沒有 Spotify 自己的歌詞，也沒有電台頁和探索頁。
+- 沒有 Spotify 自己的歌詞，也沒有推薦、相似歌手和新發行，所以電台和探索頁只能用你自己的收聽紀錄做成，不會出現你沒聽過的歌。
 - 聲音由 Spotify App 發出，所以等化器、音效、視覺化和自動混音都碰不到 Spotify 的歌。
 
 ### 中國大陸的音樂平臺
@@ -108,6 +115,9 @@ https://<你的網域>/?npHost=<通道主機>
 用這個網址打開一次，Folia 就會記住這台主機，之後從主畫面打開也會連它。換了通道就再用新的主機打開一次。
 
 ## 常見問題
+
+**電台或探索頁是空的？**
+在這次更新之前登入的，要登出 Spotify 再登入一次，允許讀取收聽紀錄。剛註冊、還沒什麼收聽紀錄的帳號，內容也會比較少。
 
 **Spotify 登入後沒有回到 Folia？**
 確認是從主畫面的 Folia 登入，而不是 Safari 分頁；也確認 Spotify 應用的 Redirect URI 和你的網域完全一致（`https://<你的網域>/spotify-callback.html`）。
