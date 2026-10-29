@@ -11,6 +11,9 @@ import {
 import { callSpotifyWeb, isSpotifyWebNotFound } from './spotifyWebApi';
 import { isSpotifyWebPlaylistClosed, spotifyWebCatalog } from './spotifyWebCatalog';
 import { forgetSpotifyWebMe, readSpotifyWebMe, spotifyWebLibrary } from './spotifyWebLibrary';
+import { spotifyWebExplore } from './spotifyWebExplore';
+import { resetSpotifyWebRecommendations, spotifyWebRecommendations } from './spotifyWebRecommendations';
+import { forgetSpotifyWebTaste } from './spotifyWebTaste';
 import { SPOTIFY_LYRIC_OFFSET_MS } from '../spotifyLyricOffset';
 import { spotifyWebMutations } from './spotifyWebMutations';
 import { normalizeSpotifyWebCollection, normalizeSpotifyWebSong, present, spotifyWebSongOf } from './spotifyWebNormalize';
@@ -25,8 +28,9 @@ import { spotifyLoginGuide } from '../spotifyLoginGuide';
 // as an app the person registered (VITE_SPOTIFY_CLIENT_ID), and plays in the person's own Spotify app,
 // on the device Spotify plays on (a phone, a computer), which Folia controls through the Web API
 // (`devices`, spotifyWebDevices.ts). Its songs and collections are the desktop version's, so a song kept by one
-// plays in the other. Spotify's own lyrics, the radio tab and the explore page are not in the
-// public API: lyrics come from the other sources, and the two tabs are left out.
+// plays in the other. Spotify's own lyrics, radio and recommendations are not in the public API:
+// lyrics come from the other sources, and the radio tab and the explore page are made of the
+// account's own listening (spotifyWebRecommendations.ts, spotifyWebExplore.ts).
 
 // Spotify gives at most 10 rows of a search a request (February 2026), up to offset 1000.
 const SEARCH_ROWS = 10;
@@ -59,7 +63,7 @@ export const spotifyWebProvider: OnlineMusicProvider = {
     capabilities: {
         search: true, playback: true, lyrics: false, wordByWordLyrics: false, auth: true,
         userLibrary: true, playlists: true, albums: true, artists: true, userAlbums: true,
-        recommendations: false, explore: false, mutations: true, likes: true, playlistTrackMutations: true,
+        recommendations: true, explore: true, mutations: true, likes: true, playlistTrackMutations: true,
         playlistSubscription: true,
     },
     normalizeSong: normalizeSpotifyWebSong, normalizeUser: normalizeSpotifyUser, normalizeCollection: normalizeSpotifyWebCollection,
@@ -130,6 +134,8 @@ export const spotifyWebProvider: OnlineMusicProvider = {
         },
         async logout() {
             forgetSpotifyWebMe();
+            forgetSpotifyWebTaste();
+            resetSpotifyWebRecommendations();
             clearSpotifyWebSession();
             stopSpotifyWebPlayback();
         },
@@ -147,6 +153,8 @@ export const spotifyWebProvider: OnlineMusicProvider = {
         subscribe: subscribeSpotifyWebDevice,
         watchElsewhere: watchSpotifyElsewhere,
     },
+    recommendations: spotifyWebRecommendations,
+    explore: spotifyWebExplore,
     catalog: spotifyWebCatalog,
     library: spotifyWebLibrary,
     mutations: spotifyWebMutations,

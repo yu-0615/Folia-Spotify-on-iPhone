@@ -30,6 +30,8 @@ const SCOPES = [
     'user-library-read', 'user-library-modify', 'user-follow-read', 'user-follow-modify',
     'playlist-read-private', 'playlist-read-collaborative', 'playlist-modify-private', 'playlist-modify-public',
     'user-read-playback-state', 'user-modify-playback-state',
+    // The radio tab and the explore page (spotifyWebTaste.ts): the most played songs and artists, and the songs played last.
+    'user-top-read', 'user-read-recently-played',
 ].join(' ');
 
 interface SpotifyWebSession { accessToken: string; refreshToken: string; expiresAt: number }

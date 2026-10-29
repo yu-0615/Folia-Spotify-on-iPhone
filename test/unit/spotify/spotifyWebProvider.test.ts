@@ -72,13 +72,15 @@ afterEach(() => {
 
 describe('which Spotify adapter is registered', () => {
     it('is the web one where the build names a Spotify app and there is no desktop bridge', () => {
-        expect(spotify().capabilities.explore).toBe(false);
+        // (The web one's explore page has no songs tab; the desktop one's has.)
+        expect(spotify().capabilities.exploreSongs).toBeFalsy();
         expect(spotify().getAvailability?.()).toEqual({ configured: true });
     });
 
     it('is the web one in a browser without a Client ID too, which asks for one at sign-in and keeps it here', async () => {
         vi.stubEnv('VITE_SPOTIFY_CLIENT_ID', '');
-        expect(spotify().capabilities.explore).toBe(false);
+        // (The web one's explore page has no songs tab; the desktop one's has.)
+        expect(spotify().capabilities.exploreSongs).toBeFalsy();
         expect(spotify().getAvailability?.()).toEqual({ configured: true });
         const setting = spotify().auth!.setting!;
         expect(setting.get()).toBe('');
@@ -246,6 +248,78 @@ describe('signing in from an app on the home screen', () => {
         memory.set(REDIRECT_KEY, JSON.stringify({ state: 'k', verifier: 'v'.repeat(43), returnTo: '/', startedAt: Date.now() - 11 * 60 * 1000 }));
         expect(await resumeSpotifyWebRedirectLogin()).toBe(false);
         expect(memory.has(REDIRECT_KEY)).toBe(false);
+    });
+});
+
+// The radio tab and the explore page of the web version: the account's own listening, as the Web
+// API gives an app of one's own no recommendations (spotifyWebTaste.ts).
+describe('the radio tab and the explore page', () => {
+    const routes = () => answer({
+        'GET /me/top/tracks': url => reply({ items: { short_term: [track('a'), track('b')], medium_term: [track('b'), track('c')], long_term: [track('d')] }[url.searchParams.get('time_range') ?? ''] }),
+        'GET /me/top/artists': () => reply({ items: [{ id: id('r'), name: 'Artist', images: [] }] }),
+        'GET /me/player/recently-played': () => reply({ items: [{ track: track('e') }, { track: track('a') }] }),
+        'GET /me/following': () => reply({ artists: { items: [{ id: id('r'), name: 'Artist' }, { id: id('s'), name: 'Other' }] } }),
+        'GET /artists/': url => reply({ items: url.pathname.includes(id('r'))
+            ? [{ id: id('m'), name: 'Old', release_date: '2020', artists: [{ id: id('r'), name: 'Artist' }] }, { id: id('n'), name: 'New', release_date: '2026-10-01', artists: [{ id: id('r'), name: 'Artist' }] }]
+            : [] }),
+    });
+
+    it('asks for the most played songs and the songs played last at sign-in', async () => {
+        const key = await spotify().auth!.startLogin!();
+        await spotify().auth!.openLoginPage!(key);
+        const scope = new URL(openMock.mock.calls.at(-1)![0]).searchParams.get('scope') ?? '';
+        expect(scope).toContain('user-top-read');
+        expect(scope).toContain('user-read-recently-played');
+    });
+
+    it('makes the explore page of the most played songs and artists and their new releases, each song once', async () => {
+        signedIn();
+        routes();
+        const { forgetSpotifyWebTaste } = await import('@/services/onlineMusic/spotify/web/spotifyWebTaste');
+        forgetSpotifyWebTaste();
+        const page = await spotify().explore!.getFeed();
+        expect(page.sections.map(section => section.id)).toEqual(['top-recent', 'top-artists', 'artist-releases', 'top-months', 'top-ever', 'followed']);
+        const ids = (sectionId: string) => page.sections.find(section => section.id === sectionId)!.items.map(item => (item.kind === 'song' ? String(item.song.id) : String(item.collection.id)));
+        expect(ids('top-recent')).toEqual([id('a'), id('b')]);
+        // (b was shown already.)
+        expect(ids('top-months')).toEqual([id('c')]);
+        expect(ids('artist-releases')).toEqual([id('n'), id('m')]);
+        // (The artist played most was shown already.)
+        expect(ids('followed')).toEqual([id('s')]);
+    });
+
+    it('hands out the FM songs once each and keeps a trashed one out; the daily songs keep the day\'s order', async () => {
+        signedIn();
+        routes();
+        const { forgetSpotifyWebTaste } = await import('@/services/onlineMusic/spotify/web/spotifyWebTaste');
+        const { resetSpotifyWebRecommendations } = await import('@/services/onlineMusic/spotify/web/spotifyWebRecommendations');
+        forgetSpotifyWebTaste();
+        resetSpotifyWebRecommendations();
+        const recommendations = spotify().recommendations!;
+        const first = await recommendations.getPersonalFm!();
+        expect(first).toHaveLength(2);
+        await recommendations.dislikeSong!(id('e'));
+        const handed = [...first, ...await recommendations.getPersonalFm!(), ...await recommendations.getPersonalFm!()].map(song => String(song.id));
+        expect(new Set(handed).size).toBe(handed.length);
+        expect(handed.filter(song => song === id('e')).length).toBeLessThanOrEqual(first.some(song => String(song.id) === id('e')) ? 1 : 0);
+        const daily = (await recommendations.getDailySongs!()).map(song => String(song.id));
+        expect(daily.sort()).toEqual([id('a'), id('b'), id('c'), id('d'), id('e')].sort());
+        expect((await recommendations.getDailySongs!()).map(song => String(song.id))).toEqual((await recommendations.getDailySongs!()).map(song => String(song.id)));
+        expect((await recommendations.getRecommendedCollections!(10)).map(album => String(album.id))).toEqual([id('n'), id('m')]);
+    });
+
+    it('leaves out what a sign-in made before these were asked for has no right to', async () => {
+        signedIn();
+        answer({
+            'GET /me/top/': () => reply({ error: { status: 403, message: 'Insufficient client scope' } }, 403),
+            'GET /me/player/recently-played': () => reply({ error: { status: 403, message: 'Insufficient client scope' } }, 403),
+            'GET /me/following': () => reply({ artists: { items: [{ id: id('s'), name: 'Other' }] } }),
+            'GET /artists/': () => reply({ items: [] }),
+        });
+        const { forgetSpotifyWebTaste } = await import('@/services/onlineMusic/spotify/web/spotifyWebTaste');
+        forgetSpotifyWebTaste();
+        const page = await spotify().explore!.getFeed();
+        expect(page.sections.map(section => section.id)).toEqual(['followed']);
     });
 });
 
