@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "io.github.yu0615.foliaspotify",
+      "sha256_cert_fingerprints": ["41:EF:E4:43:C3:9F:3D:55:9D:78:72:BD:26:8C:FB:94:CF:42:B4:9E:71:B7:E2:31:48:ED:71:54:79:D4:C3:D1"]
+    }
+  }
+]
