@@ -43,7 +43,8 @@ The features are those of Folia-Spotify, with these changes for the iPhone:
 
 | Area | Change |
 | --- | --- |
-| Layout | A smaller page font size (12px), content running into the notch and bottom safe areas, the bottom bar closer to the edge, a wider player capsule |
+| Layout | A smaller page font size (12px), the bottom bar closer to the edge, a wider player capsule |
+| Safe areas | In portrait the status bar is opaque black and the page runs from just below it to the bottom of the screen: buttons at the top (such as Ponder's Exit) are not hidden by the Dynamic Island, and there is no blank strip at the bottom; in landscape there is no status bar and the page fills the whole screen |
 | Now-playing card | Pill-shaped with a round cover, placed a little further from the left edge, clear of the rounded corner |
 | Control panel | 216px wide as in Folia-on-iPhone (its tabs become icons), with its toggle moved inward |
 | Spotify sign-in | Opened from the home screen, Spotify's sign-in page opens inside Folia and comes back to it once you agree (Folia-Spotify opens a separate window, which never comes back to a home-screen app) |
