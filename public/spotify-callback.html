@@ -21,7 +21,9 @@
   (function () {
     var params = new URLSearchParams(window.location.search);
     var answer = { state: params.get('state') || '', code: params.get('code') || '', error: params.get('error') || '' };
-    history.replaceState(null, '', window.location.pathname);
+    // Inside an app's own web view (Android's carries "; wv)"), the Android app reads the answer
+    // from this address once the page has loaded (src/utils/system/nativeApp.ts), so it stays.
+    if (!/; wv\)/.test(navigator.userAgent)) history.replaceState(null, '', window.location.pathname);
     var language = (navigator.language || '').toLowerCase();
     var say = function (texts) {
       var text = language.indexOf('zh') === 0 ? (/tw|hk|mo|hant/.test(language) ? texts.tw : texts.cn) : language.indexOf('id') === 0 ? texts.id : texts.en;
@@ -60,6 +62,11 @@
     // Not a window the app opened, and no attempt here: the app that asked keeps its data
     // elsewhere, so this answer cannot reach it. Said rather than closed, so it can be told.
     if (!window.opener) {
+      // The Android app's web view: the app has the answer from this address and closes the view.
+      if (/; wv\)/.test(navigator.userAgent)) {
+        say({ tw: '正在回到 Folia…', cn: '正在回到 Folia…', id: 'Kembali ke Folia…', en: 'Going back to Folia…' });
+        return;
+      }
       say({
         tw: 'Folia 沒有收到這次登入：這個瀏覽器和 Folia 不共用資料。請回到 Folia 再試一次。',
         cn: 'Folia 没有收到这次登录：这个浏览器和 Folia 不共用数据。请回到 Folia 再试一次。',

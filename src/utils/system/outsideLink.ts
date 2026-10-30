@@ -1,7 +1,9 @@
+import { openInSystemBrowser, runsAsNativeApp } from './nativeApp';
+
 // src/utils/system/outsideLink.ts
 // Opening a page outside the app, the one place that knows how: the desktop app hands the address
-// to the system browser (a plain link would load it inside the app's own window), the web build
-// opens a new tab.
+// to the system browser (a plain link would load it inside the app's own window), so does the
+// Android app, the web build opens a new tab.
 
 /** Whether an outside address has to be handed to the desktop app instead of followed. */
 export const opensThroughDesktopApp = (): boolean => Boolean(window.electron?.openExternalUrl);
@@ -14,6 +16,10 @@ export const opensThroughDesktopApp = (): boolean => Boolean(window.electron?.op
 export const openOutsideLink = async (url: string): Promise<void> => {
     if (window.electron?.openExternalUrl) {
         await window.electron.openExternalUrl(url);
+        return;
+    }
+    if (runsAsNativeApp()) {
+        await openInSystemBrowser(url);
         return;
     }
     window.open(url, '_blank', 'noopener,noreferrer');

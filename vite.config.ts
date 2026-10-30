@@ -271,12 +271,21 @@ export default async function viteConfig(_config: ConfigEnv): Promise<UserConfig
       },
     },
     plugins: [
+      // The Android app (capacitor.config.ts) keeps the status and navigation bars out of the page,
+      // which a page that asks to cover the whole screen undoes on newer WebViews.
+      _config.mode === 'android' && {
+        name: 'folia-android-viewport',
+        transformIndexHtml: (html: string) => html.replace(/,\s*viewport-fit=cover/, ''),
+      },
       devLyricProxyPlugin(),
       commandPinyinPlugin(),
       traditionalLocalePlugin(),
       icuFoliaDataPlugin(),
       react(),
       VitePWA({
+        // The Android app is served from the APK itself: a worker there kept the previous build's
+        // files, so an update's new chunks failed to load. Its worker removes itself (and an older one).
+        selfDestroying: _config.mode === 'android',
         registerType: 'autoUpdate',
         includeAssets: ['icon.svg'],
         devOptions: {

@@ -8,6 +8,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 // Nothing here asks Spotify.
 
 vi.mock('@/services/onlineMusic/providerAccountCache', () => ({ saveProviderAccountSnapshot: vi.fn() }));
+// The Android app (src/utils/system/nativeApp.ts): off unless a test turns it on.
+const nativeApp = vi.hoisted(() => ({ native: false, opened: [] as string[], closed: 0, reached: null as ((address: URL) => void) | null }));
+vi.mock('@/utils/system/nativeApp', () => ({
+    runsAsNativeApp: () => nativeApp.native,
+    openInAppWebView: async (url: string, onAddress: (address: URL) => void) => { nativeApp.opened.push(url); nativeApp.reached = onAddress; },
+    closeAppWebView: async () => { nativeApp.closed += 1; },
+    openInSystemBrowser: async () => undefined,
+    webApiUrl: (path: string) => path,
+}));
 
 import { omni } from '@/services/onlineMusic/omni';
 import { callSpotifyWeb } from '@/services/onlineMusic/spotify/web/spotifyWebApi';
@@ -248,6 +257,42 @@ describe('signing in from an app on the home screen', () => {
         memory.set(REDIRECT_KEY, JSON.stringify({ state: 'k', verifier: 'v'.repeat(43), returnTo: '/', startedAt: Date.now() - 11 * 60 * 1000 }));
         expect(await resumeSpotifyWebRedirectLogin()).toBe(false);
         expect(memory.has(REDIRECT_KEY)).toBe(false);
+    });
+});
+
+// The Android app: Spotify's page opens in a web view of the app's own, which is closed once it
+// reaches the callback address with the answer.
+describe('signing in from the Android app', () => {
+    beforeEach(() => {
+        nativeApp.native = true;
+        nativeApp.opened.length = 0;
+        nativeApp.closed = 0;
+    });
+    afterEach(() => {
+        nativeApp.native = false;
+    });
+
+    it('opens the consent page in the app\'s web view and takes the answer from the callback address', async () => {
+        const key = await spotify().auth!.startLogin!();
+        await spotify().auth!.openLoginPage!(key);
+        expect(openMock).not.toHaveBeenCalled();
+        const page = new URL(nativeApp.opened[0]);
+        expect(page.searchParams.get('state')).toBe(key);
+        expect(page.searchParams.get('redirect_uri')).toBe('https://folia.test/spotify-callback.html');
+        answer({
+            'POST /api/token': (_url, init) => {
+                expect(new URLSearchParams(String(init.body)).get('code')).toBe('code-a');
+                return reply({ access_token: 'access-a', refresh_token: 'refresh-a', expires_in: 3600 });
+            },
+            'GET /me': () => reply({ id: 'me', display_name: 'Listener' }),
+        });
+        // The pages on the way (Spotify's own) are not the answer.
+        nativeApp.reached!(new URL(`https://accounts.spotify.com/login?state=${key}&code=code-x`));
+        expect(await spotify().auth!.checkLogin!(key)).toEqual({ state: 'waiting' });
+        nativeApp.reached!(new URL(`https://folia.test/spotify-callback.html?state=${key}&code=code-a`));
+        expect(nativeApp.closed).toBe(1);
+        expect(await spotify().auth!.checkLogin!(key)).toEqual({ state: 'confirmed' });
+        expect(JSON.parse(memory.get(SESSION_KEY)!)).toMatchObject({ accessToken: 'access-a' });
     });
 });
 

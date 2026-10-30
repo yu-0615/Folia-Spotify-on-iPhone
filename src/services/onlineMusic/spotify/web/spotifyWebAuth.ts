@@ -1,6 +1,7 @@
 import { OnlineProviderError } from '../../../../types/onlineMusic';
 import type { LoginState, ProviderAvailability, ProviderSetting } from '../../../../types/onlineMusic';
 import { getStoredString, removeStoredKey, setStoredString } from '../../../../stores/storagePrimitives';
+import { closeAppWebView, openInAppWebView, runsAsNativeApp } from '../../../../utils/system/nativeApp';
 
 // src/services/onlineMusic/spotify/web/spotifyWebAuth.ts
 // The sign-in to Spotify through the app the listener registered on developer.spotify.com: the
@@ -9,8 +10,9 @@ import { getStoredString, removeStoredKey, setStoredString } from '../../../../s
 // Spotify's page opens in a window of its own and comes back to public/spotify-callback.html, which
 // hands the code to this page over a BroadcastChannel. In the desktop app (whose own sign-in reads
 // Spotify; this one controls its devices), the page opens in the listener's browser and comes back
-// to a loopback address the desktop side answers (electron/loopbackSignIn.cjs). The tokens are kept
-// in this page's storage.
+// to a loopback address the desktop side answers (electron/loopbackSignIn.cjs). In the Android app,
+// the page opens in a web view of the app's own, which is closed once it reaches the callback
+// address with the answer. The tokens are kept in this page's storage.
 
 const ACCOUNTS = 'https://accounts.spotify.com';
 const SESSION_KEY = 'folia_spotify_web_session';
@@ -102,6 +104,16 @@ const listen = (): void => {
     // Node's channel (the tests) would otherwise keep the process open; a browser has no `unref`.
     (channel as BroadcastChannel & { unref?: () => void }).unref?.();
     channel.onmessage = (event: MessageEvent<CallbackAnswer>) => take(event.data);
+};
+
+// In the Android app, Spotify's answer is the callback address the app's web view reaches, with
+// the answer in its query. The web view is closed then; the callback page itself is not needed.
+const takeFromCallbackAddress = (address: URL): void => {
+    const callback = new URL(spotifyWebRedirectUri());
+    if (address.origin !== callback.origin || address.pathname !== callback.pathname) return;
+    const params = address.searchParams;
+    take({ state: params.get('state') ?? '', code: params.get('code') ?? '', error: params.get('error') ?? '' });
+    void closeAppWebView();
 };
 
 const readSession = (): SpotifyWebSession | null => {
@@ -228,6 +240,15 @@ export const openSpotifyWebLogin = async (key: string): Promise<void> => {
         try {
             await desktopBridge()!.openLoopbackSignIn!({ url, ...DESKTOP_REDIRECT });
         } catch (error) {
+            throw new OnlineProviderError('unavailable', SPOTIFY_WEB_POPUP_BLOCKED, 'spotify', error);
+        }
+        return;
+    }
+    if (runsAsNativeApp()) {
+        try {
+            await openInAppWebView(url, takeFromCallbackAddress);
+        } catch (error) {
+            console.warn('[Spotify] Web sign-in page did not open in the app', error);
             throw new OnlineProviderError('unavailable', SPOTIFY_WEB_POPUP_BLOCKED, 'spotify', error);
         }
         return;
